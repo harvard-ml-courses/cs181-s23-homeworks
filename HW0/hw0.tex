@@ -1,0 +1,430 @@
+\documentclass{harvardml}
+
+% Authors: Amir Shanehsazzadeh, Andrew Kim, Nari Johnson (Jan 2021)
+% Edited by: Max Guo, Raphael Pellegrin, Katherine Tian (Jan 2022)
+% Edited once more by: William Tong (Jan 2023)
+
+% Adapted from CS281 Fall 2019 section 0 notes
+
+% This tex file relies on
+% the presence of two files:
+% harvardml.cls and common.sty
+
+\course{CS181-s18}
+\assignment{Assignment \#0}
+\duedate{never}
+
+
+\usepackage{url}
+\usepackage{amsfonts, amsmath, amsthm}
+\usepackage{listings}
+\usepackage[shortlabels]{enumitem}
+\usepackage{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\theoremstyle{plain}
+\usepackage[textsize=tiny]{todonotes}
+
+% Some useful macros.
+\newcommand{\given}{\,|\,}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\p}{\partial}
+\newcommand{\mba}{\mathbf{a}}
+\newcommand{\mbb}{\mathbf{b}}
+\newcommand{\mbx}{\mathbf{x}}
+\newcommand{\mcX}{\mathcal{X}}
+\newcommand{\mcY}{\mathcal{Y}}
+\newcommand{\boldw}{\mathbf{w}}
+\newcommand{\mbxt}{\tilde{\mathbf{x}}}
+\newcommand{\Sigmat}{\tilde{\Sigma}}
+\newcommand{\mbz}{\mathbf{z}}
+\newcommand{\mbw}{\mathbf{w}}
+\newcommand{\mcN}{\mathcal{N}}
+\newcommand{\mcP}{\mathcal{P}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\trans}{\intercal}
+\newcommand{\Ut}{\tilde{U}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\angstrom}{\textup{\AA}}
+\renewcommand{\v}[1]{\mathbf{#1}}
+
+
+\usepackage{xcolor}
+\newcount\Comments  % 0 suppresses notes to selves in text
+\Comments = 1
+\newcommand{\kibitz}[2]{\ifnum\Comments=1{\color{#1}{#2}}\fi}
+\newcommand{\dcp}[1]{\kibitz{blue}{[DCP: #1]}}
+
+\begin{document}
+
+Welcome to CS181! 
+
+The purpose of this assignment is to assess your readiness for
+this course. \textbf{It will not be graded}. Nonetheless, we \textit{strongly}
+encourage you to look through this document, and compare your solutions to the
+provided answer key. Note: this assignment is substantially longer than the
+homeworks you will receive in the class. Do not feel the need to complete every
+last problem. Rather, use this as an opportunity to identify areas where you may
+be a little rusty, and take time now to address any gaps.
+
+If you encounter any difficulty with these problems, fear not! Swing by office
+hours, post questions on Ed, and consult the resources recommended in this
+document. We recognize that the pre-requisites for this coarse are broad, and 
+not every student will be freshly familiar with every single topic. That 
+being said, there will be little time --- if any --- devoted to covering these 
+topics during lecture. If you struggle with the majority of these questions,
+please consider taking this course at a later semester.
+
+\section{Linear algebra (and some calculus)}
+Linear algebra is foundational for many of the topics we will study this
+semester. Feeling rusty? Took linear algebra one-too-many semesters ago? Not a
+problem! Here are some resources to get you back up to speed:
+
+\begin{itemize}
+	\item
+	\href{https://www.youtube.com/watch?v=kjBOesZCoqc&list=PL0-GT3co4r2y2YErbmuJw2L5tW4Ew2O5B}{The
+	Essence of Linear Algebra}: an excellent tour of linear algebra basics,
+	brought to you by 3Blue1Brown.
+	\item \href{https://textbooks.math.gatech.edu/ila/index2.html}{Interactive
+	Linear Algebra}: a succinct, clear text on linear algebra fundamentals, with
+	embedded interactive demos that help illustrate important concepts.
+	\item \href{https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf}{Matrix Cookbook}:
+	the indispensable reference for all things matrix-related. Of particular
+	use are the matrix derivative formulas (chapter 2).
+\end{itemize}
+
+The following questions are representative of the level of linear algebra expected
+in this course. \\
+
+\begin{problem}
+		    Given the matrix $\mathbf{X}$ and the vectors $\mathbf{y}$ and $\mathbf{z}$  below:
+		    \begin{equation*}
+		        \mathbf{X} = \begin{pmatrix}
+		        x_{11} & x_{12}\\
+		        x_{21} & x_{22}
+		        \end{pmatrix} \hspace{10pt} \mathbf{y} = \begin{pmatrix} y_{1} \\ y_{2} \end{pmatrix} \hspace{10pt} \mathbf{z} = \begin{pmatrix} z_{1} \\ z_{2} \end{pmatrix} \hspace{10pt} 
+		    \end{equation*}  
+		    \begin{enumerate}[label=(\alph*)]
+		        \item Expand $\mathbf{X}\mathbf{y} + \mathbf{z}$.
+		        
+		        \item Expand $\mathbf{y^T}\mathbf{X}\mathbf{y}$.
+
+		    \end{enumerate}
+		\end{problem}
+
+\begin{problem}
+
+Assume matrix $\mathbf{X}$ has shape $(n \times d)$, and vector $\mathbf{w}$ has shape $(d \times 1)$.
+
+\begin{enumerate}[label=(\alph*)]
+		        
+		        \item What shape is $\mathbf{y} =  \mathbf{X} \mathbf{w}$?
+		        
+		        \item What shape is $(\mathbf{X}^T \mathbf{X})^{-1}$?
+		        
+		        \item Using $\mathbf{y}$ from part (a), what shape is $(\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$?
+		        
+		        \item Assume vector $\mathbf{w}' = \mathbf{w}^T$.  What shape is $\mathbf{y}' = \mathbf{X}\mathbf{w}'^T $?  
+
+		    \end{enumerate}
+
+\end{problem}
+
+\begin{problem}
+        Write $\mathbf{u} = \mathbf{u}^\parallel + \mathbf{u^\perp}$ where $\mathbf{u}^\parallel = \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle} \v v$. is the projection of $\v u$ onto $\v v$. Prove that $\langle \mathbf{u}^\parallel,
+		\mathbf{u^\perp} \rangle = 0$ and that $\v u = \mathbf{u}^\parallel$ if and only if $\v u$ is a scaled multiple of $\v v$.
+        \end{problem}
+
+
+\begin{problem}
+	For an invertible matrix $\mathbf{A}$ show that $|\mathbf{A}^{-1}| = \frac{1}{|\mathbf A|}$ where $|\mathbf A|$ is the determinant of $\mathbf{A}.$
+\end{problem}
+        
+
+\begin{problem} 
+	Solve the following vector/matrix calculus problems. In all of the below, $\mathbf{x}$ and $\mathbf{w}$ are column vectors (i.e. $n \times 1$ vectors).  It may be helpful to refer to \href{https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf}{\emph{The Matrix Cookbook}} by Petersen and Pedersen, specifically sections 2.4, 2.6, and 2.7.
+	
+	\begin{enumerate} [label=(\alph*)]
+		\item Let $f(\mathbf{x}) = \mathbf{x}^T \mathbf{x}$. Find $\nabla_{\mathbf{x}} f(\mathbf{x}) = \frac{\delta}{\delta \mathbf{x}} f(\mathbf{x})$.
+		
+		\emph{Hint}: As a first step, you can expand $\mathbf{x}^T \mathbf{x} = (x_1^2 + x_2^2 + ... + x_n^2)$, where $\mathbf{x} = (x_1, ..., x_n)$. 
+		
+		\item Let $f(\mathbf{w},\mathbf{x}) = (1 - \mathbf{w}^T \mathbf{x})^2$. Find $\nabla_{\mathbf{w}} f(\mathbf{w},\mathbf{x}) = \frac{\delta}{\delta \mathbf{w}} f(\mathbf{w},\mathbf{x})$.
+		
+		% TODO I'm assuming this was the right gradient?
+		\item Let $\mathbf{A}$ be a symmetric $n$-by-$n$ matrix. If $f(\mathbf{w},\mathbf{x}) = \frac{1}{2}\mathbf{x}^T \mathbf{A} \mathbf{x} + \mathbf{w}^T \mathbf{x}$, find $\nabla_{\mathbf{x}} f(\mathbf{w},\mathbf{x}) = \frac{\delta}{\delta \mathbf{x}} f(\mathbf{w},\mathbf{x})$.
+		\end{enumerate}
+\end{problem}
+
+\begin{problem}
+In her most recent work-from-home shopping spree, Nari decided to buy several house plants.  She would like for them to grow as tall as possible, but needs your calculus help to understand how to best take care of them.
+
+\begin{enumerate} [label=(\alph*)] 
+\item After perusing the internet, Nari learns that the height $y$ in mm of her Weeping Fig plant can be directly modeled as a function of the oz of water $x$ she gives it each week:
+
+$$ y = - 3x^2 + 72x + 70$$
+
+Is this function concave, convex, or neither?  Explain why or why not.
+
+\item Solve analytically for the critical points of this expression (i.e., where the derivative of the function is zero).  For each critical point, use the second-derivative test to identify if each point is a  max or min point, and use arguments about the global structure (e.g., concavity or convexity) of the function to argue whether this is a local or global optimum. 
+
+\item How many oz per week should Nari water her plant to maximize its height? With this much water how tall will her plant grow?
+
+\item Nari also has a Money Tree plant.  The height $y$ in mm of her Money Tree can be directly modeled as a function of the oz of water $x$ she gives it per week:
+
+$$ y = - x^4 + 16 x^3 - 93 x^2 + 230 x - 190$$
+
+Is this function concave, convex, or neither?  Explain why or why not.
+
+\end{enumerate}
+\end{problem}
+
+\newpage
+\section{Probability and statistics}
+This semester's offering of CS181 will place heavier emphasis on probabilistic
+machine learning. Fluency with basic probability and statistics is essential.
+Please take extra care to ensure you are comfortable solving the following
+problems. Some resources that may help:
+
+\begin{itemize}
+	\item \href{https://healy.create.stedwards.edu/Chemistry/CHEM4341/BayesPrimer2.pdf}{A Probability Primer}:
+	An accessible, succinct tour of essential ideas in probability and statistics,
+	written for a scientific audience.
+	\item \href{https://www.youtube.com/watch?v=R13BD8qKeTg}{Bayes'Theorem}:
+	An entertaining illustration of Bayes' Theorem, brought to you by Veritasium.
+	\item
+	\href{https://en.wikipedia.org/wiki/List_of_probability_distributions}{List
+	of probability distributions}: Common (and uncommon) probability
+	distributions, helpfully compiled by Wikipedia. Take full advantage of
+	Wikipedia (and Google) when referencing PDFs, CDFs, moments, and
+	hard-to-remember properties.
+\end{itemize}
+
+
+The following questions are representative of the level of probability and
+statistics expected in this course. \\
+
+\begin{problem} Solve the following: 
+\begin{enumerate} [label=(\alph*)] 
+\item Verify that $\E(aX + b) = a \E(X) + b$.
+\item Verify that $\var(aX + b) = a^2\var(X)$.
+\item Verify that $\var(X) = \E(X^2) - \E(X)^2$
+\item Verify that $\var(X + Y) = \var(X) + \var(Y) + \cov(X, Y)$
+
+\item Suppose that $X_1, ..., X_n$ are i.i.d., scalar random variables with mean $\mu$ and variance $\sigma^2$. Let $\Bar{X}$ be the mean $\frac{1}{n}\sum_i^n X_i$. Find $\E(\Bar{X})$ and $\var(\Bar{X})$.
+\end{enumerate}
+\end{problem}
+
+\begin{problem}
+Suppose $X_1, X_2, X_3, \ldots X_n \overset{\text{iid}}{\sim} \text{Unif}[0, 1].$
+What is the distribution of
+
+\begin{enumerate} [label=(\alph*)] 
+\item $(X_1, X_2)$
+\item $X_1 X_2$
+\item $X_1 + X_2$
+\item $X_1 + X_2 + X_3$
+\item $\sum_{i=1}^n X_i$
+\item $\sum_{i=1}^n X_n$
+\end{enumerate}
+
+If writing a precise expression proves cumbersome, feel free to offer a qualitative description
+or plot instead. What do you notice about the sum in part (e) as $n \rightarrow \infty$?
+How does it differ from the sum in part (f)?
+\end{problem}
+
+		    
+\begin{problem}
+    Prove or come up with counterexamples for the following statements:
+    \begin{enumerate}[label=(\alph*)]
+        \item  Random variables $A$ and $B$ are conditionally independent given $C$.  Does this imply that $A$ and $B$ are unconditionally independent?
+        \item  Random variables $A$ and $B$ are independent.  Does this imply that $A$ and $B$ are conditionally independent given some random variable $C$?
+    \end{enumerate}
+
+\end{problem}
+
+\begin{problem}
+Consider the following:
+\begin{enumerate}[label=(\alph*)]
+\item Your child has been randomly selected for Type I diabetes screening, using
+a highly accurate new test that boasts of a false positive rate of 1\% and a
+false negative rate of 0\%. The prevalence of of Type I diabetes in children is
+approximately 0.228\%. Should your child test positive, what is the probability
+that they has Type I diabetes?
+
+\item Should you be concerned enough to ask for further testing or treatment for
+your child?
+
+\item Later, you read online that Type I diabetes is 6 times more prevalent in
+prematurely born children. If this statistic is true, what is the probability
+that your child, who is prematurely born, has Type I diabetes?
+
+\item Given the new information, should you be concerned enough to ask for
+further testing or treatment for your child?
+\end{enumerate}
+\end{problem}
+
+\begin{problem}
+During shopping week, you're trying to decide between two classes based on the
+criteria that the class must have a lenient grading system. You hear from your
+friends that one of these classes is rumored to award grades lower than the work
+merits 35\% of the time while the other awards lower grades 15\% of the time.
+However, the rumor doesn't specify which class has harsher grading. So, you
+decide to conduct an experiment: submit an assignment to be graded. 
+
+Fortunately, both classes offer an optional Homework 0 that is graded as extra
+credit. Unfortunately, you only have time to complete the problem set for just
+one of these classes. 
+
+Suppose you randomly pick the Homework 0 from Class A to complete and suppose
+that you received a grade that you believe is lower than the quality of your
+work warrents. Based on this evidence, what is the probability that Class A has
+the harsher grading system? Which class should you drop based on the results of
+your experiment (or do you not have sufficient evidence to decide)?
+\end{problem}
+
+
+\begin{problem}
+Suppose we randomly sample a Harvard College student from the undergraduate
+population.  Let $X$ be the indicator of the sampled individual concentrating in
+computer science, and let $Y$ be the indicator that they work in the tech
+industry after graduation.\\
+
+Suppose that the below table represented the joint probability mass function
+(PMF) of $X$ and $Y$:
+
+\begin{center}
+\begin{tabular}{ c | c c }
+  & $Y = 1$ & $Y = 0$ \\ \hline\\
+ $X = 1$ & $\frac{10}{100}$ & $\frac{5}{100}$ \\  \\
+ $X = 0$ & $\frac{15}{100}$ & $\frac{70}{100}$ \\   
+\end{tabular}
+\end{center}
+
+
+\begin{enumerate} [label=(\alph*)] 
+\item Calculate the marginal probability $P(Y = 1)$.  In the context of this problem, what does this probability represent?
+\item Calculate the conditional probability $P(Y = 1 | X = 1)$.  In the context of this problem, what does this probability represent?
+\item Are $X$ and $Y$ independent?  Why or why not? What is the interpretation of this?
+
+\end{enumerate}
+\end{problem}
+
+
+\begin{problem}
+
+(Optional) A random point $(X, Y, Z)$ is chosen uniformly in the ball 
+$$B = \{(x, y, z): x^2 + y^2 + z^2 \leq 1\}$$
+
+\begin{enumerate} [label=(\alph*)] 
+\item Find the joint PDF of $(X, Y, Z)$.
+\item Find the joint PDF of  $(X, Y)$ (this is the marginal distribution on $X$ and $Y$).
+\item Write an expression for the marginal PDF of $X$, as an integral.
+
+\end{enumerate}
+\end{problem}
+
+
+%TODO: update
+\noindent Credits:  Problems 12 and 13 were inspired by Exercise 7.19 and  Example 7.1.5 in Blitzstein \& Hwang's ``Introduction to Probability''.
+
+\newpage
+
+\section{Programming Exercises}
+This course uses Python as the primary programming language, and will involve
+significant coding. If you have never used Python before, it may be possible 
+to learn the language on-the-fly, but doing so will require considerable extra 
+self-study. Some resources for refreshing your Python skills:
+
+\begin{itemize}
+	\item \href{https://docs.python.org/3/tutorial/}{The Python Tutorial}: straight
+	from the docs. Chapters 2 - 5 are the most important.
+	\item \href{https://automatetheboringstuff.com/}{Automate the Boring Stuff
+	with Python}: an excellent overview of the language, as well as useful
+	Python skills everyone should know. Chapters 1 - 5 will teach you everything
+	you need to know. Chapters $\geq 12$ are nuggets of pure gold.
+	\item \href{https://numpy.org/doc/stable/user/quickstart.html}{NumPy Quickstart}:
+	a succinct introduction to \verb|numpy|, the indispensable numeric Python toolkit.
+	If you've never used \verb|numpy| before, please give this a look and try the 
+	practice exercises below.
+\end{itemize}
+
+The following exercises illustrate common programming challenges you will
+encounter in this class:\\
+
+\begin{problem}
+Let's warm up with a simple Python exercise:
+
+\begin{enumerate}[label=(\alph*)]
+    \item Using the random seed 181, generate $N = 20$ data points $(x,y)$ where $x$ is uniformly sampled from $(-10,10)$ and $y$ is uniformly sampled from $(20,80)$. (To get consistent answers with the staff solution, use \verb|numpy|.) 
+    \item (Optional) Save your data into two columns in a .csv file, and read it back out. 
+    \item Let $f(x,y) = (y+10) \cdot x/5$. Compute $z_i = f(x_i,y_i)$ for $i \in 1 \ldots N$. Report the mean and standard deviation of $\{z_1, \ldots, z_N\}$.
+    \item Identify the data point $(x,y)$ with the largest $y$-value in the data set.
+    \item Compute the sum of all the $y$-values of points with positive $x$-value.
+    % Maybe some random n^2 function that will take 2 nested for-loops or some algorithmic thing?
+\end{enumerate}
+\end{problem}
+
+
+\begin{problem}
+Here, we will practice using the Python package \verb|numpy|.
+
+\begin{enumerate}[label=(\alph*)]
+    \item Using \verb|np.arange| or \verb|np.linspace|, create a \verb|numpy| array of all the nonnegative integers starting at $0$ and ending at $9$.
+    \item Using \verb|np.reshape|, reshape the array so it's 2 dimensional with size $(2, 5)$. Hint: the first row should be $[0, 1,2,3,4]$.
+    \item Using \verb|np.vstack|, add a row to the bottom of the matrix from the previous part so that the matrix contains all of the nonnegative integers starting from $0$ and ending at $14$ in ascending order left to right, then top to bottom.
+    \item Using \verb|np.ones|, \verb|np.reshape|, and \verb|np.hstack|, add a column to the right of the matrix from the previous part that is all ones.
+    \item Using \verb|np.dot|, perform a matrix-vector multiplication with the matrix from the previous part with the vector $[0, 1, 0, 0, 0, 0]$.
+    \item Using \verb|np.sum| and some of your own logic, find the sum of all the numbers in the matrix from 4. that are even.
+\end{enumerate}
+\end{problem}
+
+\begin{problem}
+In this problem, we'll learn how to use \href{https://en.wikipedia.org/wiki/Inverse_transform_sampling}{inverse transform sampling}
+to sample from an exponential distribution. The goal of this exercise is to
+translate a theoretical notion into tangible code --- a skill you will practice
+often in this course.
+
+\begin{enumerate}[label=(\alph*)]
+	\item Let $U \sim \text{Unif}[0, 1]$. Prove that $\Pr(U \leq x) = x$, for
+	any value $x \in [0, 1]$. 
+	\item Let $X$ be a continuous random variable with a CDF function $F$ that
+	is invertible. Prove that $F(X) \sim \text{Unif}[0,1]$.
+
+	\emph{Hint}: Suppose there exists an invertible function $T$ such that $T(U)
+	\overset{d}{=} X$. Prove that $T(u) = F^{-1}(u)$ for $u \in [0, 1]$.
+
+	\emph{Hint (x2)}: If $F$ is the CDF of $X$, then $F(x) = \Pr(X \leq x)$.
+	Rewrite this expression into a form that looks like the result from
+	part (a).
+
+	\item From part (b), we know that $X \overset{d}{=} F^{-1}(U)$. In plain
+	English, this means that if we draw samples $u_1, u_2, u_3, \ldots u_n$ from a
+	uniform distribution, and compute $x_i = F^{-1}(u_i)$, then the resulting
+	values $x_1, x_2, x_3, \ldots x_n$ are sampled according to $X$!
+	
+	Why is this a big deal? Why not just call \verb|np.random.exponential()| and
+	save yourself the trouble of going through a laborious derivation? Your
+	computer is very good at sampling random-looking values uniformly between 0
+	and 1. The challenge in sampling any other distribution is therefore
+	converting from uniform samples to samples of $X$. If $X$ has an invertible
+	CDF, we can use the inverse transform method to sample from $X$ very cheaply.
+
+	Apply your newfound knowledge to sample from the exponential distribution.
+	Write out the CDF of $X \sim \text{Exp}(\lambda)$, compute the inverse, and 
+	convert uniform samples into exponential samples. Plot a histogram to
+	confirm that your samples are, indeed, exponentially distributed.
+
+
+
+
+\end{enumerate}
+\end{problem}
+
+\end{document}
