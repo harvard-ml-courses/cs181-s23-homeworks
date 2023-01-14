@@ -19,6 +19,7 @@
 \usepackage{amsfonts, amsmath, amsthm}
 \usepackage{listings}
 \usepackage[shortlabels]{enumitem}
+\usepackage{minted}
 
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}[section]
@@ -522,5 +523,125 @@ Suppose that the below table represented the joint PMF of $X$ and $Y$:
 \end{problem}
 
 \noindent Credits:  Problems 12 and 13 were inspired by Exercise 7.19 and  Example 7.1.5 in Blitzstein \& Hwang's ``Introduction to Probability''.
+
+\subsubsection*{Problem 14}
+\begin{minted}[linenos=true, frame=single, framesep=4mm, baselinestretch=0.9, fontsize=\footnotesize]{python}
+import numpy 
+import numpy.random 
+import csv
+
+# a)
+numpy.random.seed(181)
+N=20
+points=[(numpy.random.uniform(-10,10),numpy.random.uniform(20,80)) for i in range(N)]
+
+# b)
+
+x=[points[i][0] for i in range(len(points))]
+y=[points[i][1] for i in range(len(points))]
+
+with open('points.csv', 'w', encoding='UTF8') as f:
+    writer = csv.writer(f)
+
+    # write the data
+    writer.writerows(numpy.array([x,y]).T)
+
+data=[]
+with open('points.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='\'')
+    for row in reader:
+        data.append((float(row[0]),float(row[1])))
+
+
+# c)
+def f(x,y):
+    return ((y+10)*x)/5
+z=[f(x,y) for (x,y) in points]
+print('The mean and std are {} and {} respectively.'.format(numpy.mean(z),numpy.std(z)))
+
+
+# d)
+maximum=max([y for (x,y) in points])
+ans_4=[(x,y) for (x,y) in points if y==maximum]
+if len(ans_4)==1:
+    print('The data point (x,y) with the largest y value is {}'.format(ans_4[0]))
+else:
+    print('The data points (x,y) with the largest y value are {}'.format(ans_4))
+    
+# e)
+ans_5=sum([y for (x,y) in points if x>0])
+print('The sum of y-values of all points with positive x-value is {}'.format(ans_5))
+\end{minted}
+
+\subsubsection*{Problem 15}
+\begin{minted}[linenos=true, frame=single, framesep=4mm, baselinestretch=0.9, fontsize=\footnotesize]{python}
+import numpy as np
+
+# a)
+print('Part a')
+ans_1=np.arange(10)
+print(ans_1)
+
+# b)
+print('Part b')
+ans_2=ans_1.reshape((2,5))
+print(ans_2)
+
+# c)
+print('Part c')
+ans_3=np.vstack((ans_2, np.arange(10,15)))
+print(ans_3)
+
+# d)
+print('Part d')
+ans_4=np.hstack((ans_3, np.ones(3).reshape(3,1)))
+print(ans_4)
+
+# e)
+print('Part e')
+vec=[0,1,0,0,0,0]
+# Picks up the second column of ans_4
+ans_5=np.dot(ans_4,vec)
+print(ans_5)
+
+# f)
+print('Part f')
+a,b=ans_4.shape
+print("Number of even elements:",a*b-sum(sum(ans_4%2)))
+print("Solution to 6):",sum([sum([j for j in i if j%2==0]) for i in ans_4]))
+# Using a loop
+count=0
+for i in ans_4:
+    for j in i:
+        if j%2==0:
+            count+=j
+
+\end{minted}
+
+\subsubsection*{Problem 16}
+\begin{minted}[linenos=true, frame=single, framesep=4mm, baselinestretch=0.9, fontsize=\footnotesize]{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+def cdf_inv(x, lamb=1):
+    return - 1 / lamb * np.log(1 - x)
+
+def sample_x(n_samps=1000, lamb=1):
+    samp = np.random.random(n_samps)   # uniform sample
+    return cdf_inv(samp, lamb=lamb)
+    
+# plot densities
+lambs = [0.5, 1, 1.5]
+
+for l in lambs:
+    samps = sample_x(lamb=l)
+    plt.hist(samps, histtype='step', density=True, bins=50, label=rf'$\lambda = {l}$', alpha=0.8)
+
+plt.legend()
+plt.xlim(0, 5)
+plt.xlabel('x')
+plt.ylabel('density')
+plt.show()
+\end{minted}
 
 \end{document}
