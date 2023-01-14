@@ -381,9 +381,37 @@ further testing or treatment for your child?
 
 \textbf{Solution:}
 \begin{enumerate}[label=(\alph*)]
-\item
-\end{enumerate}
+\item Let $D$ be the event that your child has diabetes, and $+$ be the event
+that your child tests positive. Then applying Bayes' Rule,
 
+\begin{align*}
+	\Pr(D | +) &= \frac{\Pr(+ | D) \Pr(D)}{\Pr(+ | D) \Pr(D) + \Pr(+ | \overline{D}) \Pr(\overline{D})} \\
+	&= \frac{(1) (0.00228)}{ (1) (0.00228) + (0.01)(1 - 0.00228)} \\
+	&= 0.0223
+\end{align*}
+
+Your child has a \textbf{2.23\%} chance of having diabetes.
+
+\item This depends on your personal taste for risk. If we assume your child has
+a prior probability for diabetes that matches the global average, then the
+chance that they have diabetes is negligible, and further testing is not
+required. However, if you suspect your child has an elevated risk for diabetes
+as compared to the global average (and certainly, seeing a positive test result
+may retroactively bias your prior), then the chance that your child has diabetes
+may be considerably higher. (If it were \textit{my} child, I would definitely
+request further testing, whatever the population statistics.) We explore an
+example of the latter case in the next section.
+
+\item If your child was born premature, then $\Pr(D) = 6 \cdot 0.00228 = 0.0137$.
+Substituting this new prior, applying the same Bayes' calculation as above shows
+us that the child's chance of diabetes is now \textbf{12.1\%}.
+
+\item A small change in prior assumptions results in a significant change in
+the child's chance for diabetes. One goal of this exercise is to demonstrate the
+sensitivity of Bayesian analysis to the choice of priors. Before you apply any
+technique from a Bayesian toolbox, remember to always weigh your choice of priors
+carefully, and examine their impact on the final analysis.
+\end{enumerate}
 \end{problem}
 
 \begin{problem}
@@ -405,7 +433,28 @@ the harsher grading system? Which class should you drop based on the results of
 your experiment (or do you not have sufficient evidence to decide)?
 
 \textbf{Solution:}
+There are many ways to approach this problem. Your answer may vary.
 
+We take a vanilla Bayesian approach. Let $A$ be the event that class $A$ is 
+harsher, and let $B$ be the event that class $B$ is harsher. Let $E$ be the event 
+that your HW0 was graded lower than expected. Suppose we have a uniform prior
+where $\Pr(A) = \Pr(B) = 0.5$. Then applying Bayes' Rule,
+
+\begin{align*}
+	\Pr(A | E) &= \frac{\Pr(E | A) \Pr(A)}{\Pr(E | A) \Pr(A) + \Pr(E | B) \Pr(B)} \\
+	&= \frac{(0.35) (0.5)}{(0.35) (0.5) + (0.15) (0.5)} \\
+	&= 0.7
+\end{align*}
+
+According to this analysis, there is a 70\% chance that course $A$ is more
+difficult.
+
+Is this enough to drop $A$ and take $B$? That depends on your personal taste.
+70\% is not that wide a margin, and more evidence would be helpful in making a
+confident judgement. Additional factors like your impression of the instructor,
+syllabus, course reviews, and so forth, should all influence your priors, so a
+50-50 split may not be realistic. All this is to say, the final judgement is
+subjective, and will vary based on your priorities and assumptions.
 \end{problem}
 
 
@@ -471,8 +520,6 @@ Suppose that the below table represented the joint PMF of $X$ and $Y$:
 \end{enumerate}
 
 \end{problem}
-
-
 
 \noindent Credits:  Problems 12 and 13 were inspired by Exercise 7.19 and  Example 7.1.5 in Blitzstein \& Hwang's ``Introduction to Probability''.
 
