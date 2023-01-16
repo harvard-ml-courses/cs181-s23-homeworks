@@ -1,0 +1,9 @@
+# LaTeX compile artifacts
+*.cls
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+_minted-hw0_solutions/

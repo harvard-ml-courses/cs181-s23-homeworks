@@ -1,0 +1,647 @@
+\documentclass{harvardml}
+
+% Authors: Amir Shanehsazzadeh, Andrew Kim, Nari Johnson
+% January 2021
+% Edited by William Tong (Jan 2023)
+
+% Adapted from CS281 Fall 2019 section 0 notes
+
+% This tex file relies on
+% the presence of two files:
+% harvardml.cls and common.sty
+
+\course{CS181-s18}
+\assignment{Assignment \#0 Solutions}
+\duedate{never}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amsfonts, amsmath, amsthm}
+\usepackage{listings}
+\usepackage[shortlabels]{enumitem}
+\usepackage{minted}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\theoremstyle{plain}
+\usepackage[textsize=tiny]{todonotes}
+
+% Some useful macros.
+\newcommand{\given}{\,|\,}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\p}{\partial}
+\newcommand{\mba}{\mathbf{a}}
+\newcommand{\mbb}{\mathbf{b}}
+\newcommand{\mbx}{\mathbf{x}}
+\newcommand{\mcX}{\mathcal{X}}
+\newcommand{\mcY}{\mathcal{Y}}
+\newcommand{\boldw}{\mathbf{w}}
+\newcommand{\mbxt}{\tilde{\mathbf{x}}}
+\newcommand{\Sigmat}{\tilde{\Sigma}}
+\newcommand{\mbz}{\mathbf{z}}
+\newcommand{\mbw}{\mathbf{w}}
+\newcommand{\mcN}{\mathcal{N}}
+\newcommand{\mcP}{\mathcal{P}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\trans}{\intercal}
+\newcommand{\Ut}{\tilde{U}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\angstrom}{\textup{\AA}}
+\renewcommand{\v}[1]{\mathbf{#1}}
+
+\begin{document}
+
+\begin{problem}
+		    Given the matrix $\mathbf{X}$ and the vectors $\mathbf{y}$ and $\mathbf{z}$  below:
+		    \begin{equation}
+		        \mathbf{X} = \begin{pmatrix}
+		        x_{11} & x_{12}\\
+		        x_{21} & x_{22}
+		        \end{pmatrix} \hspace{10pt} \mathbf{y} = \begin{pmatrix} y_{1} \\ y_{2} \end{pmatrix} \hspace{10pt} \mathbf{z} = \begin{pmatrix} z_{1} \\ z_{2} \end{pmatrix} \hspace{10pt} 
+		    \end{equation}  
+		    \begin{enumerate}[label=(\alph*)]
+		        \item Expand $\mathbf{X}\mathbf{y} + \mathbf{z}$ 
+		        
+		        \item Expand $\mathbf{y^T}\mathbf{X}\mathbf{y}$
+
+		    \end{enumerate}
+		\textbf{Solution:} 
+		\begin{enumerate}[label=(\alph*)]
+		        \item 
+		        \begin{equation}
+		        \mathbf{X y + z} = \begin{pmatrix}
+		                        x_{11}y_{1} + x_{12}y_{2} \\
+		                        x_{21}y_{1} + x_{22}y_{2}
+		                        \end{pmatrix} +  \begin{pmatrix}
+		                        z_1 \\
+		                        z_2
+		                        \end{pmatrix} = \begin{pmatrix}
+		                        x_{11}y_{1} + x_{12}y_{2} + z_1 \\
+		                        x_{21}y_{1} + x_{22}y_{2} + z_2
+		                        \end{pmatrix} \nonumber
+		        \end{equation}
+		        
+		        \item 
+		        \begin{align*}
+		        \mathbf{y^TXy} &= \begin{pmatrix}
+		                        y_1 & y_2
+		                        \end{pmatrix} \begin{pmatrix}
+		                        x_{11} & x_{12} \\
+		                        x_{21} & x_{22}
+		                        \end{pmatrix} \begin{pmatrix}
+		                        y_1 \\ y_2
+		                        \end{pmatrix}  \\
+		        &= \begin{pmatrix}
+		                        x_{11}y_{1} + x_{21}y_{2} &
+		                        x_{12}y_{1} + x_{22}y_{2}
+		                        \end{pmatrix}\begin{pmatrix}
+		                        y_1 \\ y_2
+		                        \end{pmatrix} \\
+		       &= x_{11}y_1^2 + x_{21}y_1y_2 + x_{12}y_1y_2 + x_{22}y_2^2\\
+		        \end{align*}
+
+		    \end{enumerate}
+		\end{problem}
+
+
+\begin{problem}
+Assume matrix $\mathbf{X}$ has dimensionality (or shape) $(n \times d)$, and vector $\mathbf{w}$ has shape $(d \times 1)$.
+
+\begin{enumerate}[label=(\alph*)]
+		        
+		        \item What shape is $\mathbf{y} =  \mathbf{X} \mathbf{w}$?
+		        
+		        \item What shape is $(\mathbf{X}^T \mathbf{X})^{-1}$?
+		        
+		        \item Using $y$ from part (a), what shape is $(\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T y$?
+		        
+		        \item Assume vector $\mathbf{w}' = \mathbf{w}^T$.  What shape is $\mathbf{y}' = \mathbf{X}\mathbf{w}'^T $?  
+
+		    \end{enumerate}
+
+\noindent \textbf{Solution:}
+\begin{enumerate}[label=(\alph*)]
+    \item $(n \times 1)$
+    \item $\mathbf{X}^T\mathbf{X}$ has shape $(d \times d)$ and so $(\mathbf{X}^T\mathbf{X})^{-1}$ has shape $(d \times d)$
+    \item $\mathbf{X}^T \mathbf{y}$ has shape $(d \times 1)$ and so $(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \mathbf{y}$ has shape $(d \times 1)$
+    \item Transposing a matrix twice returns the original matrix so we have $\mathbf{y}' = \mathbf X \mathbf{w}$, which has shape $(n  \times 1)$
+\end{enumerate}
+\end{problem}
+
+
+\begin{problem}
+        Write $\mathbf{u} = \mathbf{u}^\parallel + \mathbf{u^\perp}$ where $\mathbf{u}^\parallel = \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle} \v v$ is the projection of $\v u$ onto $\v v$. Verify that $\langle \mathbf{u}^\parallel,
+		\mathbf{u^\perp} \rangle = 0$ and that $\v u = \mathbf{u}^\parallel$ if and only if $\v u$ is a scaled multiple of $\v v$.
+		\\ 
+		\\
+		\textbf{Solution:} We have $\mathbf{u}^\perp = \v u - \mathbf{u}^\parallel = \v u - \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle} \v v.$ Then
+				$$
+				\langle \mathbf{u}^\parallel, \v u^\perp\rangle = \left\langle \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle} \v v, \v u - \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle} \v v \right\rangle = \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle}\left\langle \v v, \v u - \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle} \v v \right\rangle = $$ $$
+				\frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle}\left(\langle \v v, \v u \rangle - \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle}\langle \v v, \v v \rangle\right) = \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle}(\langle \v v, \v u \rangle - \langle \v u, \v v \rangle) = \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle}(\langle \v v, \v u \rangle - \langle \v v, \v u \rangle) = 0
+				,$$
+				where we note that $\langle \v v, \v u \rangle = \langle \v u, \v v\rangle$ since $\v u$ and $\v v$ are real vectors.\\
+				\\
+				If $\v u = \mathbf{u}^\parallel = \frac{\langle \v u, \v v \rangle}
+				{\langle \v v, \v v \rangle}\v v$ then $\v u$ is a scaled multiple of $\v v$. For the other direction suppose $\v u = c \v v$ for some $c \in \R$. Then $\langle \v u, \v v \rangle = \langle c \v v, \v v \rangle = c \langle \v v, \v v \rangle \implies \mathbf{u}^\parallel = \frac{\langle \v u, \v v \rangle}{\langle \v v, \v v \rangle} \v v = \frac{c\langle \v v, \v v \rangle}{\langle \v v, \v v \rangle} \v v = c\v v = \v u. $
+        \end{problem}
+
+
+\begin{problem}
+                For an invertible matrix $\mathbf{A}$ show that $|\mathbf{A}^{-1}| = \frac{1}{|\mathbf A|}$ where $|\mathbf A|$ is the determinant of $\mathbf{A}.$
+                \\
+                \\
+                \textbf{Solution}: We have $\mathbf{AA^{-1}} = \mathbf I$ so $|\mathbf{AA^{-1}}| = |\mathbf A| \cdot |\mathbf{A^{-1}}| = |\mathbf{I}| = 1 \implies |\mathbf{A}^{-1}| = \frac{1}{|\mathbf A|}$, where we use the fact that the determinant factors over products and that $|\mathbf A| \neq 0$ since $\mathbf A$ is invertible.
+\end{problem}
+        
+        
+        
+
+\begin{problem} 
+		       Solve the following vector/matrix calculus problems. In all of the below, $\mathbf{x}$ and $\mathbf{w}$ are column vectors (i.e. $n \times 1$ vectors).  It may be helpful to refer to \href{https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf}{\emph{The Matrix Cookbook}} by Petersen and Pedersen, specifically sections 2.4, 2.6, and 2.7.
+		    
+		    \begin{enumerate} [label=(\alph*)]
+		        \item Let $f(\mathbf{x}) = \mathbf{x}^T \mathbf{x}$. Find $\nabla_{\mathbf{x}} f(\mathbf{x}) = \frac{\delta}{\delta \mathbf{x}} f(\mathbf{x})$.
+		        
+		        \emph{Hint}: As a first step, you can expand $\mathbf{x}^T \mathbf{x} = (x_1^2 + x_2^2 + ... + x_n^2)$, where $\mathbf{x} = (x_1, ..., x_n)$. 
+		        
+		        \item Let $f(\mathbf{w}) = (1 - \mathbf{w}^T \mathbf{x})^2$. Find $\nabla_{\mathbf{w}} f(\mathbf{w}) = \frac{\delta}{\delta \mathbf{w}} f(\mathbf{w})$.
+		        
+		        % TODO I'm assuming this was the right gradient?
+		        \item Let $\mathbf{A}$ be a symmetric $n$-by-$n$ matrix. If $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T \mathbf{A} \mathbf{x} + \mathbf{w}^T \mathbf{x}$, find $\nabla_{\mathbf{x}} f(\mathbf{x}) = \frac{\delta}{\delta \mathbf{x}} f(\mathbf{x})$.
+		        \end{enumerate}
+		    \textbf{Solution:}
+		    
+		    \begin{enumerate} [label=(\alph*)]
+		        \item \begin{align*}
+		            \nabla (\mathbf{x}^T\mathbf{x}) &= \nabla (x_{1}^2 + x_{2}^2 + \ldots + x_{n}^2) \\
+		            &= \nabla (x_{1}^2 + x_{2}^2 + \ldots + x_{n}^2) \\
+		            &= \begin{pmatrix} 2x_1 \\ 2x_2 \\ \vdots \\ 2x_n
+		            \end{pmatrix} \\
+		            &= 2\mathbf{x}
+		        \end{align*}
+		        
+		        \item By the chain rule: \begin{align*}
+		            \frac{\partial f}{\partial \mathbf{w}} &= 2(1-\mathbf{w}^T\mathbf{x}) \frac{\partial}{\partial \mathbf{w}} (1-\mathbf{w}^T\mathbf{x}) \\
+		            &= -2(1-\mathbf{w}^T\mathbf{x})\mathbf{x}
+		        \end{align*}
+		        
+		        \item The partial of $\mathbf{x^TAx}$ with respect to $x_i$ is: \begin{align*}
+		            \frac{\partial}{\partial x_i} \mathbf{x^TAx} &= \frac{\partial}{\partial x_i} \sum_{j=1}^n \sum_{k=1}^n a_{jk} x_i x_j \\
+		            &= \sum_{k\neq i}a_{ik} x_k +  \sum_{j\neq i}a_{ji}x_j + 2a_{ii}x_i \\ 
+		            &= \sum_{k=1}^n a_{ik} x_k + \sum_{j=1}^n a_{ji} x_j \\
+		            &= \sum_{k=1}^n a_{ik} x_k + \sum_{k=1}^n a_{ik} x_k \hspace{5pt} \text{since $A$ is symmetric}\\
+		            &= 2\sum_{k=1}^n a_{ik} x_k
+		        \end{align*}
+		        
+		        This is the $i$th row that results from multiplying $2Ax$. Thus $\frac{\partial}{\partial \mathbf{x}} \mathbf{x^TAx}$ is $2Ax$.
+		        
+		        Since $\frac{\partial}{\partial \mathbf{x}}\mathbf{w^Tx}$ is $\mathbf{w}$, the total answer is:
+		        
+		        \begin{equation}
+		            \mathbf{A}\mathbf{x} + \mathbf{w}
+		        \end{equation}
+		       
+		    \end{enumerate}
+ 		    
+		\end{problem}
+
+\begin{problem}
+% Single-variable convex optimization overview
+
+In her most recent work-from-home shopping spree, Nari decided to buy several house plants.  She would like for them to grow as tall as possible, but needs your calculus help to understand how to best take care of them.
+
+\begin{enumerate} [label=(\alph*)] 
+\item After perusing the internet, Nari learns that the height $y$ in mm of her Weeping Fig plant can be directly modeled as a function of the oz of water $x$ she gives it each week:
+
+%TODO find something easily differentiable with only positive support. (there's nothing convex though, hmm.  it would be easiest to just make the question itself something with infinite negative support .....
+
+
+$$ y = - 3x^2 + 72x + 70$$
+
+Is this function concave, convex, or neither?  Explain why or why not.
+
+\item Solve analytically for the critical points of this expression.  For each critical point, use the second-derivative test to identify if each point is a local max, global max, local min, or global min. 
+
+\item  How many oz per week should Nari water her plant to maximize its height? With this much water how tall will her plant grow?
+
+\item Nari also has a Money Tree plant.  The height $y$ in mm of her Money Tree can be directly modeled as a function of the oz of water $x$ she gives it per week:
+
+$$ y = - x^4 + 16 x^3 - 93 x^2 + 230 x - 190$$
+
+Is this function concave, convex, or neither?  Explain why or why not.
+
+\end{enumerate}
+
+\noindent \textbf{Solution:}
+\begin{enumerate}[label=(\alph*)]
+    \item It is concave since the 2nd derivative is $y'' = -6 < 0$.
+    \item The first derivative is $y' = -6x+72 = -6(x-12)$. We have $y' = 0$ if and only if $x = 12$, so $x=12$ is the only critical point. Since $y' > 0$ for $x < 12$ and $y' < 0$ for $x > 12$ we know that $x=12$ is a local maximum. Since $y$ is concave ($y'' < 0$) the point $x=12$ is the global maximum.
+    \item She should give her plant $12$ oz of water a week for it to achieve the maximum height of $502$ mm.
+    \item Neither, the 2nd derivative is $y'' = -12x^2 + 96x -186$, which is negative and positive depending on $x$.
+\end{enumerate}
+
+
+\end{problem}
+        
+\begin{problem} Solve the following: 
+\begin{enumerate} [label=(\alph*)] 
+\item Verify that $\E(aX + b) = a \E(X) + b$.
+\item Verify that $\var(aX + b) = a^2\var(X)$.
+\item Verify that $\var(X) = \E(X^2) - \E(X)^2$
+\item Verify that $\var(X + Y) = \var(X) + \var(Y) + \cov(X, Y)$
+
+\item Suppose that $X_1, ..., X_n$ are i.i.d., scalar random variables with mean $\mu$ and variance $\sigma^2$. Let $\Bar{X}$ be the mean $\frac{1}{n}\sum_i^n X_i$. Find $\E(\Bar{X})$ and $\var(\Bar{X})$.
+\end{enumerate}
+\textbf{Solution:} 
+\begin{enumerate} [label=(\alph*)] 
+\item We have 
+\begin{align*}
+	\E[aX + b] &= \sum_{x \in X} \left(ax + b\right) \Pr (x) \\
+	&= a \sum_{x} x \Pr(x) + b\sum_x \Pr(x) \\
+	&= a \E[x] + b
+\end{align*}
+\item Let $\E[X] = \mu$. Then applying the result from part a, we have
+\begin{align*}
+	\var(aX + b) &= \sum_{x \in X} \left( ax + b - \E[a X + b] \right)^2 \Pr (X) \\
+	&= \sum_{x \in X}  \left( ax + b - a\mu - b \right)^2 \Pr (X) \\
+	&= \sum_{x \in X}  a^2 (x-\mu)^2 \Pr (X) \\
+	&= a^2 \var(X)
+\end{align*}
+\item Let $\E[X] = \mu$. Then we have 
+\begin{align*}
+	\var(X) &= \sum_{x \in X} (x - \mu)^2 \Pr (x) \\
+	&= \sum_x \left( x^2 - 2x\mu + \mu^2 \right) \Pr(x) \\
+	&= \sum_x x^2 \Pr(x) - 2\mu\sum_x x \Pr(x) + \mu^2 \sum_x \Pr(x)\\
+	&= \E(X^2) - 2\mu^2 + \mu^2 \\
+	&= \E(X^2) - \mu^2
+\end{align*}
+\newpage
+\item Using the result from part c, we have that
+\begin{align*}
+	\var(X+Y) &= \E[(X+Y)^2] - (\E[X+Y])^2 \\
+	&= \E[X^2 + 2XY + Y^2] - (\E[X]+\E[Y])^2 \\
+	&= \E[X^2]-(\E[X])^2 + \E[Y^2]-(\E[Y])^2 + 2(\E[XY]-\E[X]\E[Y]) \\
+	&= \var(X) + \var(Y) + 2\cov(X, Y)
+\end{align*}
+\item We have
+\begin{align*}
+    \E(\Bar{X}) &= \E\left(\frac{1}{n}\sum_i^n X_i\right) = \frac{1}{n}\sum_i^n \E(X_i) = \frac{1}{n}\sum_i^n \mu = \frac{1}{n} \cdot n \cdot \mu = \mu \\ 
+    \var(\Bar{X}) &= \var\left(\frac{1}{n}\sum_i^n X_i\right) = \frac{1}{n^2}\sum_i^n \var(X_i) = \frac{1}{n^2}\sum_i^n \sigma^2 = \frac{1}{n^2} \cdot n \cdot \sigma^2 = \frac{\sigma^2}{n}
+\end{align*}
+\end{enumerate}
+\end{problem}
+
+
+\begin{problem}
+	Suppose $X_1, X_2, X_3, \ldots X_n \overset{\text{iid}}{\sim} \text{Unif}[0, 1].$
+	What is the distribution of
+	
+	\begin{enumerate} [label=(\alph*)] 
+	\item $(X_1, X_2)$
+	\item $X_1 + X_2$
+	\item $\sum_{i=1}^n X_i$
+	\item $\sum_{i=1}^n X_n$
+	\end{enumerate}
+	
+	Feel free to give just a sketch or a qualitative description of each case
+	(no need for formal derivations). What do you notice about the sum in part
+	(c) as $n \rightarrow \infty$? How does it differ from the sum in part (d)?
+
+	\textbf{Solution}
+	\begin{enumerate} [label=(\alph*)] 
+		\item Because $X_1$ and $X_2$ are independent, their joint distribution
+		is simply the product of their individual distributions --- which is 1,
+		over the unit square.
+		\item The sum of two independent uniform distributions forms a triangular
+		distribution with a maximum density of 1 at $x_1 + x_2 = 1$, and tapers
+		to zero symmetrically at either end $x_1 + x_2 = 0$ and $x_1 + x_2 = 2$.
+		Note, the density of $X_1 + X_2$ is not simply 2. One way to intuit this
+		is to think about the sum of two independent dice rolls, which will tend
+		to result closer to 7 rather than uniformly covering the whole possible
+		range from 2 through 12. \href{URLhttps://en.wikipedia.org/wiki/Catan}{\textit{The Settlers of Catan}}
+		depends on precisely this property.
+		\item As you add more and more uniform random variables, one can intuitively
+		imagine that the sum will concentrate around $n / 2$, and taper off the
+		ends at $n$ and $0$. Indeed, the distribution of the sum will look more Gaussian
+		as $n \rightarrow \infty$, a consequence of the \href{https://en.wikipedia.org/wiki/Central_limit_theorem}{Central Limit Theorem}.
+		\item This quantity is equivalent to $n X_n$, which is distributed
+		uniformly on the interval $[0, N]$. Note, this differs crucially from
+		the quantity in part (c) because we sum a single random variable, rather
+		than sum over a collection of independent random variables.
+	\end{enumerate}
+\end{problem}
+		
+		    
+\begin{problem}
+Prove or come up with counterexamples for the following statements:
+    \begin{enumerate}[label=(\alph*)]
+        \item  Random variables $A$ and $B$ are conditionally independent given $C$.  Does this imply that $A$ and $B$ are (unconditionally) independent?
+        \item  Random variables $A$ and $B$ are independent.  Does this imply that $A$ and $B$ are conditionally independent given some random variable $C$?
+    \end{enumerate}
+
+\noindent \textbf{Solution:} 
+(a) No! Suppose we have a fair coin $C_1$ and an unfair coin $C_2$ that has Heads on both sides. We will select 1 coin and then flip the coin twice. Let $C$ be the event that we select $C_1$. Let $A$ be be the event that first flip lands Heads and let $B$ be the event that the second flip lands Heads. Given $C$ we have that $A$ and $B$ are two separate flips of a fair coin, and so the flips are independent given $C$. However, suppose we do not know which coin has been selected. Then given $A$ has occurred the probability of selecting coin $C_1$ is 1/3 and that of selecting coin $C_2$ is 2/3. But then $\mathbb P(B|A) = \mathbb P(B|C_1)\mathbb P(C_1|A) + \mathbb P(B|C_2)\mathbb P(C_2|A) = (1/2)\times 1/3 + (1)\times 2/3 = 5/6 \neq 3/4 = \mathbb P(B),$ so $A$ and $B$ are not independent.
+\\
+\\
+(b) No! First, consider two fair, independent coin flips $A, B$. Let $C$ be the event that $A=B$. On their own, $A$ and $B$ are independent but given $C$ we can determine $B$ from $A$ or $A$ from $B$ (they are either perfectly correlated or perfectly anti-correlated), so $A$ and $B$ are not conditionally independent given $C$.
+\end{problem}
+		   
+\begin{problem}
+Consider the following:
+\begin{enumerate}[label=(\alph*)]
+\item Your child has been randomly selected for Type I diabetes screening, using
+a highly accurate new test that boasts of a false positive rate of 1\% and a
+false negative rate of 0\%. The prevalence of of Type I diabetes in children is
+approximately 0.228\%. Should your child test positive, what is the probability
+that they has Type I diabetes?
+
+\item Should you be concerned enough to ask for further testing or treatment for
+your child?
+
+\item Later, you read online that Type I diabetes is 6 times more prevalent in
+prematurely born children. If this statistic is true, what is the probability
+that your child, who is prematurely born, has Type I diabetes?
+
+\item Given the new information, should you be concerned enough to ask for
+further testing or treatment for your child?
+\end{enumerate}
+
+\textbf{Solution:}
+\begin{enumerate}[label=(\alph*)]
+\item Let $D$ be the event that your child has diabetes, and $+$ be the event
+that your child tests positive. Then applying Bayes' Rule,
+
+\begin{align*}
+	\Pr(D | +) &= \frac{\Pr(+ | D) \Pr(D)}{\Pr(+ | D) \Pr(D) + \Pr(+ | \overline{D}) \Pr(\overline{D})} \\
+	&= \frac{(1) (0.00228)}{ (1) (0.00228) + (0.01)(1 - 0.00228)} \\
+	&= 0.0223
+\end{align*}
+
+Your child has a \textbf{2.23\%} chance of having diabetes.
+
+\item This depends on your personal taste for risk. If we assume your child has
+a prior probability for diabetes that matches the global average, then the
+chance that they have diabetes is negligible, and further testing is not
+required. However, if you suspect your child has an elevated risk for diabetes
+as compared to the global average (and certainly, seeing a positive test result
+may retroactively bias your prior), then the chance that your child has diabetes
+may be considerably higher. (If it were \textit{my} child, I would definitely
+request further testing, whatever the population statistics.) We explore an
+example of the latter case in the next section.
+
+\item If your child was born premature, then $\Pr(D) = 6 \cdot 0.00228 = 0.0137$.
+Substituting this new prior, applying the same Bayes' calculation as above shows
+us that the child's chance of diabetes is now \textbf{12.1\%}.
+
+\item A small change in prior assumptions results in a significant change in
+the child's chance for diabetes. One goal of this exercise is to demonstrate the
+sensitivity of Bayesian analysis to the choice of priors. Before you apply any
+technique from a Bayesian toolbox, remember to always weigh your choice of priors
+carefully, and examine their impact on the final analysis.
+\end{enumerate}
+\end{problem}
+
+\begin{problem}
+During shopping week, you're trying to decide between two classes based on the
+criteria that the class must have a lenient grading system. You hear from your
+friends that one of these classes is rumored to award grades lower than the work
+merits 35\% of the time while the other awards lower grades 15\% of the time.
+However, the rumor doesn't specify which class has harsher grading. So, you
+decide to conduct an experiment: submit an assignment to be graded. 
+
+Fortunately, both classes offer an optional Homework 0 that is graded as extra
+credit. Unfortunately, you only have time to complete the problem set for just
+one of these classes. 
+
+Suppose you randomly pick the Homework 0 from Class A to complete and suppose
+that you received a grade that you believe is lower than the quality of your
+work warrents. Based on this evidence, what is the probability that Class A has
+the harsher grading system? Which class should you drop based on the results of
+your experiment (or do you not have sufficient evidence to decide)?
+
+\textbf{Solution:}
+There are many ways to approach this problem. Your answer may vary.
+
+We take a vanilla Bayesian approach. Let $A$ be the event that class $A$ is 
+harsher, and let $B$ be the event that class $B$ is harsher. Let $E$ be the event 
+that your HW0 was graded lower than expected. Suppose we have a uniform prior
+where $\Pr(A) = \Pr(B) = 0.5$. Then applying Bayes' Rule,
+
+\begin{align*}
+	\Pr(A | E) &= \frac{\Pr(E | A) \Pr(A)}{\Pr(E | A) \Pr(A) + \Pr(E | B) \Pr(B)} \\
+	&= \frac{(0.35) (0.5)}{(0.35) (0.5) + (0.15) (0.5)} \\
+	&= 0.7
+\end{align*}
+
+According to this analysis, there is a 70\% chance that course $A$ is more
+difficult.
+
+Is this enough to drop $A$ and take $B$? That depends on your personal taste.
+70\% is not that wide a margin, and more evidence would be helpful in making a
+confident judgement. Additional factors like your impression of the instructor,
+syllabus, course reviews, and so forth, should all influence your priors, so a
+50-50 split may not be realistic. All this is to say, the final judgement is
+subjective, and will vary based on your priorities and assumptions.
+\end{problem}
+
+
+
+\begin{problem}
+% Conditional and joint probabilities, continuous case (integrating to marginalize)
+
+A random point $(X, Y, Z)$ is chosen uniformly in the ball 
+$$B = \{(x, y, z): x^2 + y^2 + z^2 \leq 1\}$$
+
+\begin{enumerate} [label=(\alph*)] 
+\item Find the joint PDF of $(X, Y, Z)$.
+\item Find the joint PDF of $(X, Y)$.
+\item Write an expression for the maginal PDF of $X$, as an integral.
+
+\end{enumerate}
+
+\noindent\textbf{Solution:}
+\begin{enumerate}[label=(\alph*)]
+    \item Let $B = \{(x, y, z) \ | \ x^2 + y^2 + z^2 \leq 1\}$ be the closed unit ball. The volume of $B$ is $\text{vol}(B) = \int_B 1 dx \ dy \ dz = \frac{4}{3}\pi$. Since the distribution of $(X, Y, Z)$ is uniform over $B$ the PDF is then $$f(x, y, z) = \frac{3}{4\pi}\cdot\chi((x, y, z) \in B)$$
+    where $\chi((x, y, z) \in B) = \begin{cases}
+    1 & (x, y, z) \in B \\
+    0 & (x, y, z) \not\in B
+    \end{cases}$
+    \item Let $C = \{(x, y) \ | x^2 + y^2 \leq 1\}$ be the unit circle. We have
+    $$
+    f(x, y) = \int_{\mathbb R} f(x, y, z) \ dz = \frac{3}{4\pi} \int_{\mathbb R}\chi((x, y, z) \in B) \ dz = \frac{3}{4\pi} \int_{-\sqrt{1-x^2-y^2}}^{\sqrt{1-x^2-y^2}} \chi((x, y) \in C) \ dz = $$ $$\frac{3}{2\pi} \sqrt{1-x^2-y^2} \cdot \chi((x, y) \in C)
+    .$$
+    \item We have
+    $$
+    f(x) = \int_{\mathbb R} f(x, y) \ dy = \frac{3}{2\pi}\int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}} \sqrt{1-x^2-y^2} \cdot \chi(x \in [-1, 1]) \ dy
+    .$$
+\end{enumerate}
+\end{problem}
+
+\begin{problem}
+% Binary conditional and joint probabilities
+
+Suppose we randomly sample a Harvard College student from the undergraduate population.  Let $X$ be the indicator of the sampled individual concentrating in computer science, and let $Y$ be the indicator of their working in the tech industry after graduation.\\
+
+Suppose that the below table represented the joint PMF of $X$ and $Y$:
+
+\begin{center}
+\begin{tabular}{ c | c c }
+  & $Y = 1$ & $Y = 0$ \\ \hline\\
+ $X = 1$ & $\frac{10}{100}$ & $\frac{5}{100}$ \\  \\
+ $X = 0$ & $\frac{15}{100}$ & $\frac{70}{100}$ \\   
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[label=(\alph*)] 
+\item Calculate marginal probability $P(Y = 1)$.  In the context of this problem, what does this probability represent?
+\item Calculate conditional probability $P(Y = 1 | X = 1)$.  In the context of this problem, what does this probability represent?
+\item Are $X$ and $Y$ independent?  Why or why not?
+
+\end{enumerate}
+
+\noindent \textbf{Solution:}
+\begin{enumerate}[label=(\alph*)]
+    \item We have $P(Y=1) = P(Y=1, X=1) + P(Y=1, X=0) = \frac{10}{100} + \frac{15}{100} = \frac{1}{4}$. This represents the probability that a Harvard student works in the tech industry after graduation.
+    \item Similarly, we compute $P(X=1) = P(X=1, Y=1) + P(X=1, Y=0) = \frac{10}{100} + \frac{5}{100} = \frac{3}{20}$. Then we compute $P(Y=1 | X=1) = \frac{P(Y=1, X=1)}{P(X=1)} = \frac{10/100}{3/20} = \frac{2}{3}.$ This represents the probability of a CS concentrator at Harvard working in the tech industry after graduation.
+    \item $X$ and $Y$ are not independent since $P(Y=1|X=1) \neq P(Y=1).$
+\end{enumerate}
+
+\end{problem}
+
+\noindent Credits:  Problems 12 and 13 were inspired by Exercise 7.19 and  Example 7.1.5 in Blitzstein \& Hwang's ``Introduction to Probability''.
+
+\subsubsection*{Problem 14}
+\begin{minted}[linenos=true, frame=single, framesep=4mm, baselinestretch=0.9, fontsize=\footnotesize]{python}
+import numpy 
+import numpy.random 
+import csv
+
+# a)
+numpy.random.seed(181)
+N=20
+points=[(numpy.random.uniform(-10,10),numpy.random.uniform(20,80)) for i in range(N)]
+
+# b)
+
+x=[points[i][0] for i in range(len(points))]
+y=[points[i][1] for i in range(len(points))]
+
+with open('points.csv', 'w', encoding='UTF8') as f:
+    writer = csv.writer(f)
+
+    # write the data
+    writer.writerows(numpy.array([x,y]).T)
+
+data=[]
+with open('points.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='\'')
+    for row in reader:
+        data.append((float(row[0]),float(row[1])))
+
+
+# c)
+def f(x,y):
+    return ((y+10)*x)/5
+z=[f(x,y) for (x,y) in points]
+print('The mean and std are {} and {} respectively.'.format(numpy.mean(z),numpy.std(z)))
+
+
+# d)
+maximum=max([y for (x,y) in points])
+ans_4=[(x,y) for (x,y) in points if y==maximum]
+if len(ans_4)==1:
+    print('The data point (x,y) with the largest y value is {}'.format(ans_4[0]))
+else:
+    print('The data points (x,y) with the largest y value are {}'.format(ans_4))
+    
+# e)
+ans_5=sum([y for (x,y) in points if x>0])
+print('The sum of y-values of all points with positive x-value is {}'.format(ans_5))
+\end{minted}
+
+\subsubsection*{Problem 15}
+\begin{minted}[linenos=true, frame=single, framesep=4mm, baselinestretch=0.9, fontsize=\footnotesize]{python}
+import numpy as np
+
+# a)
+print('Part a')
+ans_1=np.arange(10)
+print(ans_1)
+
+# b)
+print('Part b')
+ans_2=ans_1.reshape((2,5))
+print(ans_2)
+
+# c)
+print('Part c')
+ans_3=np.vstack((ans_2, np.arange(10,15)))
+print(ans_3)
+
+# d)
+print('Part d')
+ans_4=np.hstack((ans_3, np.ones(3).reshape(3,1)))
+print(ans_4)
+
+# e)
+print('Part e')
+vec=[0,1,0,0,0,0]
+# Picks up the second column of ans_4
+ans_5=np.dot(ans_4,vec)
+print(ans_5)
+
+# f)
+print('Part f')
+a,b=ans_4.shape
+print("Number of even elements:",a*b-sum(sum(ans_4%2)))
+print("Solution to 6):",sum([sum([j for j in i if j%2==0]) for i in ans_4]))
+# Using a loop
+count=0
+for i in ans_4:
+    for j in i:
+        if j%2==0:
+            count+=j
+
+\end{minted}
+
+\subsubsection*{Problem 16}
+\begin{minted}[linenos=true, frame=single, framesep=4mm, baselinestretch=0.9, fontsize=\footnotesize]{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+def cdf_inv(x, lamb=1):
+    return - 1 / lamb * np.log(1 - x)
+
+def sample_x(n_samps=1000, lamb=1):
+    samp = np.random.random(n_samps)   # uniform sample
+    return cdf_inv(samp, lamb=lamb)
+    
+# plot densities
+lambs = [0.5, 1, 1.5]
+
+for l in lambs:
+    samps = sample_x(lamb=l)
+    plt.hist(samps, histtype='step', density=True, bins=50, label=rf'$\lambda = {l}$', alpha=0.8)
+
+plt.legend()
+plt.xlim(0, 5)
+plt.xlabel('x')
+plt.ylabel('density')
+plt.show()
+\end{minted}
+
+\end{document}
