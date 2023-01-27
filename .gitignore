@@ -1,0 +1,8 @@
+
+# TeX Compilier Log
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
