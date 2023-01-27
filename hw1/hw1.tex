@@ -304,7 +304,7 @@ $y_i = \mathbf{w}^\top \mathbf{x}_i + \varepsilon$ where
 $\varepsilon \sim \mathcal{N}(0, \sigma)$, we roll in the bias 
 $\mathbf{x}_i = \begin{bmatrix} 1 \\ x_i \end{bmatrix}$, and each data point
 is drawn independently. Find $\sigma_{\text{MLE}}$ (recall the formula from class!) and compute the 
-negative log-likelihood for your train and test sets. 
+negative log-likelihood for your train and test sets. The following derives the likelihood.
 \begin{align*} p(\mathbf{y}\mid \mathbf{X},\mathbf{w},\sigma_{\text{MLE}}) 
 &= \prod_{i=1}^N \mathcal{N}(\mathbf{y}_i \mid \mathbf{w}^\top\mathbf{x_i}, \sigma_{\text{MLE}}) \\
 &= \prod_{i=1}^N \frac{1}{\sigma_{\text{MLE}}\sqrt{2\pi}}\exp\left(-\frac{(y_i - \mathbf{w}^\top \mathbf{x}_i)^2}{2\sigma_{\text{MLE}}^2}\right)
