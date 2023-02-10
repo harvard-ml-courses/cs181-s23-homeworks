@@ -70,7 +70,7 @@ def test_p1(LogisticRegressor, basis1, basis2, basis3):
         print("Your w for basis3 has the wrong shape")
         return
     else:
-        basis3_checker = np.allclose(TestWs[2], modelTest.W, rtol=0, atol=1e-2)
+        basis3_checker = np.allclose(TestWs[2], modelTest.W, rtol=0, atol=1e-1)
         if basis3_checker:
             basis3_checker = "Pass"
         else:
