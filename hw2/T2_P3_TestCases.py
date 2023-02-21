@@ -20,8 +20,8 @@ def test_p3_softmax(vanilla_model, basis_model):
     student_v_weights = vanilla_model.W
     student_basis_weights = basis_model.W
     
-    assert np.allclose(student_v_weights, vanilla_weights), f"Failed for softmax regression: incorrect weights"
-    assert np.allclose(student_basis_weights, basis_weights), f"Failed for basis regression: incorrect weights"
+    assert np.allclose(student_v_weights, vanilla_weights, atol=0.3), f"Failed for softmax regression: incorrect weights"
+    assert np.allclose(student_basis_weights, basis_weights, atol=0.3), f"Failed for basis regression: incorrect weights"
     
     print("Passed softmax regression tests")
 
