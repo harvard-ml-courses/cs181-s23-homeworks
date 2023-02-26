@@ -1,33 +1,31 @@
 \documentclass[submit]{harvardml}
 
-% FDV: Check all frontmatter for years, due dates, and references for
-% sections of the textbook, etc.
+% FDV: Check all frontmatter for years, due dates, book sections, etc.
 \course{CS181-S23}
 \assignment{Assignment \#3}
-\duedate{11:59pm EST, March 23, 2022}
+\duedate{11:59pm EST, March 23rd, 2023}
 
 \usepackage[OT1]{fontenc}
 \usepackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage[pdftex]{graphicx}
-\usepackage{subfig}
-\usepackage{fullpage}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{color}
-\usepackage{soul}
-\usepackage{todonotes}
-\usepackage{listings}
-\usepackage{common}
-\usepackage{enumitem}
-\usepackage{bm}
-\newcommand{\B}{\text{B}}
-\newcommand{\Beta}{\text{Beta}}
-\usepackage{pythonhighlight}
-\usepackage[mmddyyyy,hhmmss]{datetime}
-\usepackage{mdframed}
 \usepackage{framed}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{enumitem}
 
-\setlength\parindent{0em}
+\DeclareMathOperator*{\mean}{\mathbb{E}}
+
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{red},
+  stringstyle=\color{green},
+  frame=single,
+  showstringspaces=false,
+}
 
 \definecolor{verbgray}{gray}{0.9}
 
@@ -115,7 +113,10 @@ Please submit your \textbf{\LaTeX\ file and code files to the Gradescope assignm
       \item Derive the mean, mode, and variance of the Beta distribution. That is, for $\theta \sim \mathrm{Beta}(\alpha, \beta)$, derive
       
       \begin{enumerate}
-        \item $\mean[\theta]$. See hint. \footnotemark[1]
+        \item $\mean[\theta]$. See hint. \footnote{As an alternative to taking the integral, you may want to use
+        \emph{reasoning by representation.} See example 8.5.2 of the Stat 110
+        textbook. If you do so, please explain the derivation in your own
+        words!}
         \item $\arg \max_{\theta} p(\theta)$ when $\alpha > 1$ and $\beta > 1$. What happens otherwise? (Consider $p(0)$ and $p(1)$.)
         \item $\mathrm{Var}(\theta) = \mean[\theta^2] - (\mean[\theta])^2$.
       \end{enumerate}
@@ -124,7 +125,7 @@ Please submit your \textbf{\LaTeX\ file and code files to the Gradescope assignm
 
       \item 
       Show that the posterior
-      \(p(\theta \mid Y=y)\) is indeed Beta and derive its parameters. This proves that a Beta prior and a Binomial likelihood form a conjugate pair; in other words, the Beta distribution is a \textbf{conjugate prior} for the Binomial distribution. See hint.\footnote{For convenience in calculation: Do you need to know the normalizing constant?}
+      \(p(\theta \mid Y=y)\) is indeed Beta and derive its parameters. This proves that a Beta prior and a Binomial likelihood form a conjugate pair; in other words, the Beta distribution is a \textbf{conjugate prior} for the Binomial distribution. See hint.\footnote{For convenience in calculation: Do you need to calculate the normalizing constant? Reuse your results from the previous part.}
     \end{enumerate}
   
 \end{enumerate}
@@ -185,9 +186,16 @@ Please submit your \textbf{\LaTeX\ file and code files to the Gradescope assignm
       \(\theta, y, n, \alpha, \beta\) such that minimizing \(\ell\) is
       equivalent to calculating the MAP estimate,
       i.e.~\(\theta_{\text{MAP}} = \arg \min_{\theta} \ell(\theta)\). Your
-      function should be a sum of a mean-squared-error term and a
-      regularization term \(g(\theta) \in \mathbb{R}\). Can you interpret
-      the regularization term? \footnotemark[2]
+      function should be a sum of:
+      \begin{enumerate}
+        \item a mean-squared-error term (which should loosely resemble $(y - \hat y)^2$)
+        \item a
+        regularization term \(g(\theta) = - a \theta + b \theta^{2}\) for some $a, b$.
+      \end{enumerate}
+      
+      Can you interpret the regularization term? 
+      
+      Hint: Work backwards from part 1 to derive the MSE term and from part 2.a.ii to get the regularization term. Watch out for the signs! For the interpretation, complete the square and then compare your expression with the prior mode you found in 2.a.ii.
     \item
       What happens to both $\theta_{\text{post mean}}$ and $\theta_{\text{MAP}}$ as \(n \to \infty\)? Compare this to the MLE estimate.
       (Remember to account for the change in \(y\).)
@@ -197,20 +205,13 @@ Please submit your \textbf{\LaTeX\ file and code files to the Gradescope assignm
 
 \end{framed}
 
-\footnotetext[1]{As an alternative to taking the integral, you may want to use
-\emph{reasoning by representation.} See example 8.5.2 of the Stat 110
-textbook. If you do so, please explain the derivation in your own
-words!}
-
-\footnotetext[2]{Consider a regularization term of
-the form \(g(\theta) = - a \theta + b \theta^{2}\) and work
-backwards from your derivations in 3.c. For the interpretation, try
-completing the square and consider the prior mode,
-i.e.~\(\arg \max_{\theta} p(\theta)\), which you derived in 3.b.}
-
 \subsection*{Solution:}
 
 \newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}[Neural Networks]
 
@@ -256,6 +257,7 @@ i.e.~\(\arg \max_{\theta} p(\theta)\), which you derived in 3.b.}
       \end{enumerate}
 
 \end{enumerate}
+
 \end{problem}
 
 \newpage 
@@ -329,20 +331,15 @@ i.e.~\(\arg \max_{\theta} p(\theta)\), which you derived in 3.b.}
     \end{enumerate}  
 \end{framed}
 
-
-  
-
 \subsection*{Solution:}
 
 
+
 \newpage
-% FDV: We had a lot of debate about this problem, whether it's useful
-% for students to have to derive this by hand or not... if we want
-% alternatives, ideas could include
-%% (1) demonstrate the fact that there are good solutions near any
-% starting point (run restarts from many starts, see that the answers
-% have good quality but very different weights)
-% (2) do a double-descent with linear regression (using very small N).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}[Modern Deep Learning Tools: PyTorch]
 
@@ -350,7 +347,7 @@ In this problem, you will learn how to use PyTorch. This machine learning librar
 
 
 \begin{enumerate}
-    \item In \verb|T3_P3.ipynb| you will implement an MLP for image classification from scratch. Copy and paste code solutions below and include a final graph of your training progress. Also submit your completed \verb|T3_P3.ipynb| file.
+    \item In \verb|T3_P3.ipynb| you will implement an MLP for image classification from scratch. Paste your code solutions below and include a final graph of your training progress. Also submit your completed \verb|T3_P3.ipynb| file.
     \item Discuss what trends you see with your plot (train/test loss and train/test accuracy).
 \end{enumerate}
 
@@ -366,13 +363,14 @@ In this problem, you will learn how to use PyTorch. This machine learning librar
 
 
 \subsection*{Solution:}
+
 Plot:
 
 % \includegraphics[width=\linewidth]{final_plot}
 
 Code:
 
-\begin{python}
+\begin{lstlisting}[language=Python]
 n_inputs = 'not implemented'
 n_hiddens = 'not implemented'
 n_outputs = 'not implemented'
@@ -412,7 +410,13 @@ def sgd(params, lr=0.1):
 def train(net, params, train_iter, loss_func=cross_entropy, updater=sgd):
   'not implemented'
 
-\end{python}
+\end{lstlisting}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem 4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}[Impact Question: Testing security of neural networks deployed in autonomous vehicles and suggesting policy recommendations (9 points)]
 
@@ -511,7 +515,9 @@ words in total). Bullet points are appropriate.
 
 \subsection*{Solution:}
 
+
 \newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Name and Calibration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
