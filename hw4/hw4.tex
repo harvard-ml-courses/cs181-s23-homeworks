@@ -1,0 +1,413 @@
+\documentclass[submit]{harvardml}
+
+% FDV: Update front matter -- years, dates, references to book sections, etc.
+\course{CS181-S23}
+\assignment{Assignment \#4}
+\duedate{11:59pm EST, 4/13}
+
+\newcommand{\attr}[1]{\textsf{#1}}
+\usepackage[OT1]{fontenc}
+\usepackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[pdftex]{graphicx}
+\usepackage{subfig}
+\usepackage{framed}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{todonotes}
+\usepackage{listings}
+\usepackage{common}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,arrows}
+\usepackage{xifthen}
+\usepackage{pythonhighlight}
+\usepackage{soul}
+
+\usepackage[mmddyyyy,hhmmss]{datetime}
+
+\definecolor{verbgray}{gray}{0.9}
+
+\lstnewenvironment{csv}{
+  \lstset{backgroundcolor=\color{verbgray},
+  frame=single,
+  framerule=0pt,
+  basicstyle=\ttfamily,
+  columns=fullflexible}}{}
+
+\begin{document}
+
+
+\begin{center}
+{\Large Homework 4: Latent Variable Models, EM Algorithms, and PCA}\\
+\end{center}
+
+Please type your solutions after the corresponding problems using this
+\LaTeX\ template, and start each problem on a new page.
+
+Please submit the \textbf{writeup PDF to the Gradescope assignment `HW4'}. Remember to assign pages for each question.
+
+Please submit your \textbf{\LaTeX\ file and code files to the Gradescope assignment `HW4 - Supplemental'}. 
+
+
+\newpage
+\begin{problem}[Expectation-Maximization for Gamma Mixture Models]
+
+In this problem we will explore expectation-maximization for a Categorical-Gamma Mixture model.
+
+Let us suppose the following generative story for an observation $x$: first one of $K$ classes is randomly selected, and then the features $x$ are sampled according to this class. If $$z \sim \operatorname{Categorical}(\btheta)$$ indicates the selected class, then $x$ is sampled according to the class or ``component'' distribution corresponding to $z$. (Here, $\btheta$ is the mixing proportion over the $K$ components: $\sum_k \theta_k = 1$ and $ \theta_k > 0$. In other words, $\theta_k$ refers to the probability that a given observation $x$ is of class $k$). In this problem, we assume these component distributions are gamma distributions with shared shape parameter but different rate parameters: $$x | z \sim \operatorname{Gamma}(\alpha, \beta_k).$$
+
+In an unsupervised setting, we are only given a set of observables as our training dataset: $\mathcal D = \{x_n\}_{n=1}^N$. The EM algorithm allows us to learn the underlying generative process (the parameters $\btheta$ and $\{\beta_k\}$) despite not having the latent variables $\{z_n\}$ corresponding to our training data.
+
+\vspace{2em}
+
+\begin{enumerate}
+
+  \item \textbf{Intractability of the Data Likelihood} We are
+    generally interested in finding a set of parameters $\beta_k$ that
+    maximizes the likelihood of the observed data: $$\log
+    p(\{x_n\}^N_{n=1}; \btheta, \{\beta_k\}^K_{k = 1}).$$ 
+    
+    If we expand the data
+    likelihood to include the necessary sums over observations
+    $x_n$ and to marginalize out the latents,
+    $\boldz_n$, we get that $$\log
+    p(\{x_n\}^N_{n=1}; \btheta, \{\beta_k\}^K_{k = 1}) = \sum_{n = 1}^N \log \left( \sum_{k = 1}^K \operatorname{Gamma}(x_n; \alpha, \beta_k)  \theta_k  \right).$$
+    
+    Steps have been left out of the derivation for brevity, but feel free to walk through it as an additional challenge! Referencing the expression above, why is optimizing this likelihood directly intractable?
+
+\item \textbf{Complete Data Log Likelihood} Now, assume that we know the latents $\boldz_n$. In other words, assume that we know which class each $x$ belongs to. We can define the complete dataset
+  $\mathcal D = \{(x_n, \boldz_n)\}_{n=1}^N$ as one that includes these latents $\boldz_n$. Note that we can now write the negative complete data log likelihood as: 
+  \begin{align*}
+      \mcL(\btheta, \{\beta_k\}^K_{k=1}) &=  -\log p(\mathcal D; \btheta, \{\beta_k\}^K_{k=1}) \\
+      &= \sum_{n = 1}^N \sum_{k = 1}^K z_{nk} \log \operatorname{Gamma}(x_n \alpha, \beta_k))^{z_{nk}} - \sum_{n = 1}^N \sum_{k = 1}^K z_{nk} \log\theta_k.
+  \end{align*}
+
+  Again, steps have been left out of the derivation for brevity, but feel free to walk through it as an additional challenge! Why is optimizing this loss now computationally tractable if we know $\boldz_n$? Please explain how what we have seen in the first two parts motivates the EM algorithm.
+
+  (Continued on next page.)
+
+\end{enumerate}
+
+\end{problem}
+
+\newpage
+
+
+\begin{framed}
+\noindent\textbf{Problem 1} (cont.)\\
+\begin{enumerate}
+\item[3.] \textbf{Expectation Step} Now, we will move on to the E step of the EM algorithm. We will start by introducing a
+  mathematical expression for $\boldq_n$, the posterior over the
+  hidden component variables~$\boldz_n$ conditioned on the observed data
+  $x_n$ with fixed parameters.
+That is:
+  \begin{align*}
+    \textbf{q}_n &= \begin{bmatrix}
+      p(\boldz_n =\boldC_1| x_n; \btheta, \{ \beta_k \}^K_{k=1}) \\
+      \vdots \\
+      p(\boldz_n =\boldC_K| x_n; \btheta, \{ \beta_k \}^K_{k=1})
+    \end{bmatrix}.
+  \end{align*}
+  %
+%
+  Write down and simplify the expression for
+  $\boldq_n$.  Note that because the $\boldq_n$ represents the
+  posterior over the hidden categorical variables $\boldz_n$, the
+  components of vector $\boldq_n$ must sum to 1.
+  The main work is to find an expression for $p(\boldz_n|x_n; \btheta, \{\beta_k\}^K_{k=1})$  for any choice of $\boldz_n$; i.e., for any 1-hot encoded $\boldz_n$. With this, you can then construct the different components that make up the vector $\boldq_n$.
+  
+\item[4.] \textbf{Maximization Step}
+Using the~$\boldq_n$ estimates from the Expectation Step, derive an update for maximizing the expected complete data log likelihood in terms of $\btheta$ and $\{ \beta_k \}^K_{k=1}$.
+
+\begin{enumerate}
+    \item Derive an expression for the expected complete data log likelihood using $\boldq_n$. Use the expression given in part 2 as a starting point.
+    \item Find an expression for $\btheta$ that maximizes this expected complete data log likelihood. You may find it helpful to use Lagrange multipliers in order to enforce the constraint $\sum \theta_k = 1$. (Hint: Page 7 of the \href{https://harvard-ml-courses.github.io/cs181-web/sections/sec00-mathreview/sec0_semicondensed.pdf}{Math Review} contains information on Lagrange Multipliers). Why does this optimal $\btheta$ make intuitive sense?
+    \item Find an expression for $\beta_k$ that maximizes the expected complete data log likelihood.  Why does this optimal $\beta_k$  make intuitive sense?
+\end{enumerate}
+  
+
+\item[5.] Finally, implement your solution (final expressions) in code and attach the final plot below.
+
+{\bfseries You will receive no points for code not included below.}
+\end{enumerate}
+  
+\end{framed}
+
+\newpage
+\subsection*{Solution}
+
+\begin{enumerate}
+  \item
+  \item 
+  \item 
+  \item 
+    \begin{enumerate}
+      \item 
+      \item 
+      \item 
+    \end{enumerate}
+  \item 
+    Plot:
+
+    % \includegraphics[width=\linewidth]{p1}
+
+    Code:
+
+    \begin{python}
+def e_step(theta, betas):
+    q = 'not implemented'
+    return q
+
+
+def m_step(q):
+    theta_hat = 'not implemented'
+    beta_hats = 'not implemented'
+    return theta_hat, beta_hats
+
+
+def run_em(theta, betas, iterations=1000):
+    theta = 'not implemented'
+    betas = 'not implemented'
+    return theta, betas
+    \end{python}
+\end{enumerate}
+
+
+\newpage
+
+\begin{problem}[Principal Component Analysis on MNIST Data]
+
+% FDV: Here are the notes from last year.  I've already edited to make clear we want L2.  As noted below, we should also provide the baseline/reference to the pset 4 solutions in case they computed that wrong somehow.  
+% 
+% # problem 2 clarifications
+% *NB: There was a lot of confusion about this problem, and we ended up accepting any form of comparison to PCA. Next year should clarify which norm students should use more explicitly (and maybe provide a baseline for students if the computation of the reconstruction error is different from what students calculated on pset4.)*
+% 
+% For Problem 2.3 (computing PCA reconstruction error), we will accept both the L1 and L2 norm and both summing over the errors for individual images and taking the mean of the errors (as long as you compute the error for K-Means the same way as you compute it for PCA). Apologies for the ambiguity in this question! 
+
+  
+For this problem you will implement PCA from scratch on the first 6000 images of the MNIST dataset. Your job is to apply PCA on MNIST and discuss what kind of structure is found. Implement your solution in \texttt{p2.ipynb} and attach the final plots below.
+
+Recall the derivation of PCA covered in Section 6, where the principal components are associated with the largest eigenvalues of the covariance matrix: 
+
+\begin{enumerate}[label=(\alph*)]
+    \item Derive the empirical covariance matrix, which is defined as $\Sigma_X = \frac{1}{N}X^TX$ for data matrix $X$. \textit{This is true only if $X$ is centered: i.e. its columns have mean 0.}
+    \item Decompose the data matrix with Singular Value Decomposition (SVD) into $X = USV^T$. One possible way to do this is with {\normalfont \texttt{np.linalg.svd}}.
+    \item In this decomposition, $S$ is a diagonal matrix with entries $s_{i}$ which are related to eigenvalues $\lambda_{i}$ of $\Sigma_X$ via the equation $\lambda_i = s_i^2/N$ (why is this true?) and $V$ is an orthonormal matrix with columns as the eigenvectors of $\Sigma_X$.
+    \item For PCA, you want to compute the first $k < d$ principal components. Make sure your eigenvalues are sorted correctly before extracting the corresponding first $k$ eigenvectors!
+\end{enumerate}
+
+{\bfseries You will receive no points for using third-party PCA implementations (i.e. {\normalfont \texttt{scikit-learn}}), but you may use packages for calculating the singular value decomposition of a matrix.}
+
+{\bfseries You will receive no points for code not included below.}
+\begin{enumerate}
+
+\item Compute the PCA. Plot the eigenvalues corresponding to the most
+  significant 500 components in order from most significant to
+  least. Make another plot that describes the cumulative proportion of
+  variance explained by the first $k$ most significant components for
+  values of $k$ from 1 through 500.  How much variance is explained by
+  the first 500 components?  Describe how the cumulative proportion of
+  variance explained changes with $k$. 
+  
+  \textit{Reminder: Center the data before performing PCA.}
+
+\item Plot the mean image of the dataset and plot an image corresponding to each of the first 10 principal components. 
+
+How can we interpret these first 10 principal component images? Do they perform well as a clustering technique? Why or why not?
+
+% removed K-Means direct comparison, instead asking about broad comparison to other clustering techniques
+
+\item Compute the reconstruction error on the data set using the mean image of the dataset.  Then compute the reconstruction error using the first 10 principal components. (For consistency in grading, define the reconstruction error as the squared L2 norm averaged over all data points.)
+
+% FDV: Added this part: Solution should be that it does not change the
+% reconstruction error (if before X approx W*U, it becomes W*R^-1*R*U)
+% and that while still orthogonal, it may no longer align with the
+% ordered directions of most variance.  Note: we can ask why or why
+% not, or say "Why doesn't this change the reconstruction error?  What
+% parts of the interpretation of the principle components change, and
+% what stays the same?"
+\item Suppose you took the original matrix of principal components
+  that you found $U$ and multiplied it by some rotation matrix $R$.
+  Why doesn't this change the reconstruction error?  What parts of the interpretation of the principal components change, and what stays the same?
+
+\item Instead of this SVD-based derivation of PCA, we could also train a network to learn PCA transformations. In words, how could an autoencoder be implemented to perform PCA? Briefly describe how you might design the autoencoder layers, activation functions, and loss function. In that design, how would you extract the principal components?
+  
+\end{enumerate}
+
+
+\end{problem}
+
+\newpage
+\subsection*{Solution}
+Plots:
+
+% \includegraphics[width=\linewidth]{p2_cfvs}
+
+% \includegraphics[width=0.25\linewidth]{p2_mean}
+% \includegraphics[width=0.75\linewidth]{p2_pcomps}
+
+Code:
+
+\begin{python}
+def pca(x, n_comps=500):
+    top_eigvals = 'not implemented'
+    top_pcomps = 'not implemented'
+    return top_eigvals, top_pcomps
+
+
+def calc_cfvs(eigvals):
+    cum_frac_vars = 'not implemented'
+    return cum_frac_vars
+
+
+def calc_errs(x, pcomps):
+    err_mean = 'not implemented'
+    err_pcomp = 'not implemented'
+    return err_mean, err_pcomp
+\end{python}
+
+\begin{enumerate}
+  \item 
+  \item 
+  \item 
+  \item 
+  \item 
+\end{enumerate}
+
+\begin{problem}[First-order EM Algorithm and Gradient Descent]
+  
+In this problem you will investigate the connection between the EM algorithm and gradient descent. As in Problem 1, suppose that the observations $\{x_n\}_{n = 1}^N$ are generated according to a mixture model with $K$ classes:
+\begin{align*}
+    z_n &\sim \operatorname{Cat}(\bm \pi), \\
+    x_n \mid z_n &\sim p(x_n \mid z_n, \bm \theta),
+\end{align*}
+with $\sum_{k = 1}^K\pi_k = 1$ and $\bm \theta = (\bm \pi, \mathbf {w}_1, \dots, \mathbf{w}_K)$ denoting the vector containing all parameters, including the class probabilities and each individual class's parameters (we really only need $\mathbf{w}_{z_n}$ from $\bm \theta$ for each $x_n$, but this makes the notation easier).  Here, $p(\cdot \mid z_n, \bm \theta)$ is some arbitrary probability distribution.
+
+\begin{enumerate}
+
+\item Let $\bm \theta^t$ denote the current values of the parameters at iteration $t$. Write out the ELBO function $\operatorname{ELBO}(\bm \theta, q | \bm \theta^t)$, where $q(z_n)$ is the posterior distribution $p(z_n\mid x_n, \bm \theta^t)$. You should expand the expectation over the latent variable $z_n$ into a sum. Be careful to indicate which probabilities should be conditioned on $\bm \theta$ versus $\bm \theta^t$.
+\end{enumerate}
+
+Recall that in the M-step of the EM algorithm, we set $\bm \theta^{t+1} := \underset{\bm\theta}{\text{argmax}}\; \operatorname{ELBO}(\bm \theta, q | \bm \theta^t)$, where $q$ is once again the posterior distribution. However, in situations where no analytical solution exists, we resort to gradient ascent:
+$$
+\bm \theta^{t+1} := \bm\theta^t + \eta \nabla_{\bm\theta} \operatorname{ELBO}(\bm \theta, q | \bm \theta^t) \big|_{\bm \theta = \bm \theta^t}
+$$
+for some learning rate $\eta > 0$. In other words, we calculate the gradient of the ELBO at $\bm \theta = \bm \theta^t$ and then take a step in the direction of the gradient to iteratively improve $\bm \theta$. Note that only one gradient is taken per M-step; we do not wait for convergence before calculating the ELBO again. This is known as the \textit{first-order} EM algorithm.
+
+\begin{enumerate}
+\item[2.] Show that $\nabla_{\bm\theta} \operatorname{ELBO}(\bm \theta, q | \bm \theta^t) \big|_{\bm \theta = \bm \theta^t} = \nabla_{\bm\theta}\ell(\bm\theta; \{x_n\}_{n = 1}^N)\big|_{\bm \theta = \bm \theta^t}$, where $\ell(\cdot)$ denotes the observed data log-likelihood. That is, show that the gradient of $\operatorname{ELBO}(\bm \theta, q | \bm \theta^t)$ evaluated at $\bm \theta = \bm \theta^t$ is exactly equal to the gradient of the log-likelihood evaluated at $\bm \theta = \bm \theta^t$. This means that the first-order EM algorithm is equivalent to gradient ascent on the observed data log-likelihood, which by now is a very familiar algorithm!
+
+\item[3.] For a given value of $\bm \theta^t$, are the gradients $\nabla_{\bm\theta} \operatorname{ELBO}(\bm \theta, q | \bm \theta^t)$ and $\nabla_{\bm\theta}\ell(\bm\theta; \{x_n\}_{n = 1}^N)$ equal at all values of $\bm \theta$ (not just $\bm \theta = \bm \theta^t$)? Justify your answer using your proof from part 2 by either generalizing your answer for other values of $\bm \theta$ or by explaining how your proof fails for other values of $\bm \theta$.
+\end{enumerate}
+
+Now, we will make this problem more concrete by setting $K = 2$ and having the the conditional distributions $p(\cdot \mid z_n, \bm \theta)$ be (univariate) Normal. Thus, $z_n \in \{1, 2\}$ and $\bm\theta = (\pi_1, \mu_1, \sigma_1^2, \mu_2, \sigma_2^2)$, with $p(x_n \mid z_n, \bm \theta) = \mathcal{N}(\mu_{z_n}, \sigma_{z_n}^2)$. We only need $\pi_1$ because $\pi_2 = 1 - \pi_1$.
+
+\begin{enumerate}
+\item[4.] In the context of this Gaussian mixture model, why do we not need to use the first-order EM algorithm? In other words, why is it ``easy" to solve for $\underset{\bm\theta}{\text{argmax}}\; \operatorname{ELBO}(\bm \theta, q | \bm \theta^t)$? In particular, you should explain why components in $\bm \theta$ may be maximized separately and why such maximization is possible. You may find writing out $\operatorname{ELBO}(\bm \theta, q | \bm \theta^t)$ to be helpful, but no math is necessary for this part. \textbf{Your response should not be longer than five sentences}.
+
+(Continued on next page.)
+\end{enumerate}
+
+\end{problem}
+
+\newpage
+
+\begin{framed}
+\noindent\textbf{Problem 3} (cont.)\\
+\begin{enumerate}
+\item[5.] One well-known clustering algorithm is the $k$-means algorithm, also known as Lloyd's algorithm. This algorithm proceeds as follows.
+\begin{enumerate}
+    \item[0.] Randomly initialize $k$ centers $ \mu_1, \dots, \mu_k$.
+    \item[1.] Assign each observation $x_n$ to its nearest center:
+    $$
+    z_n = \underset{k}{\text{argmin}}\;\|x_n - \mu_k\|_2^2.
+    $$
+    \item[2.] Recalculate the $k$ centers:
+    $$
+    \mu_j = \frac{1}{N_j}\sum_{n = 1}^N\mathbf{1}\{z_n = j\}x_n
+    $$
+    for $j = 1, \dots, k$, where $N_j = \sum_{n = 1}^N\mathbf{1}\{z_n = j\}$ (i.e. the number of observations belonging to the $j$th cluster).
+    \item[3.] Repeat steps 1 and 2 until convergence.
+\end{enumerate}
+Explain how the $k$-means algorithm is a special case of the EM algorithm. In particular, what must the true values of $\pi_1, \mu_1, \sigma_2^2, \mu_2$, and $\sigma_2^2$ be in order for the two algorithms to be equivalent? You may use the update expressions for Gaussian mixture models in the M-step, given in lecture, without proof.
+\end{enumerate}
+\end{framed}
+
+\newpage 
+
+\subsection*{Solution}
+\begin{enumerate}
+  \item 
+  \item 
+  \item 
+  \item 
+  \item 
+\end{enumerate}
+
+\begin{problem}[Impact Question: Fair Clustering and Subgroup Parity]
+\textbf{Prompt:} A national bank in the US provides education loans to students to attend top private schools such as Harvard, MIT, etc. These loans are offered on the basis of a clustering algorithm, where the bank feeds in student attributes such as past education, financial credentials, scholastic achievements, etc. as input. The algorithm clusters these students and offers differing loan amounts and interest rates to each cluster. The bank hopes that the clustering algorithm will successfully group applicants based on potential. 
+
+\emph{Fairness Constraint:} 
+In fairness literature, subgroup parity is defined as equality among subgroups, i.e. no group of individuals should be discriminated against or overtly preferred by an algorithm. You have been roped in as a machine learning specialist to ensure that this clustering algorithm is not violating the bank’s ethical goal of preserving subgroup parity. Given that people of color, women and minorities would have likely faced adversity and socioeconomic disparity which would be reflected in their attributes, one unfair clustering outcome could be grouping all underrepresented members in one cluster. Keeping this in mind, answer the following questions. You might find \href{https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9541160}{this} paper useful, when formulating your answers.
+
+\begin{enumerate}
+    \item Disregarding the fairness constraint for now, choose an appropriate clustering algorithm for this task and explain your choice. There could be multiple correct answers, as long as the reasoning for the choice is sound.
+    \item Give any two group fairness metrics (with their mathematical formulations) that exist in literature that can be used to ensure that the clustering algorithm respects the fairness constraint? 
+    \item Give any two individual-level fairness metrics (with their mathematical formulations) given in literature.
+    \item Can you think of a scenario in the education loan dispatchment, where a group-level metric is in direct conflict with an individual-level metric? Concretely, let us consider the following toy dataset, where the features are: \textit{GPA}, \textit{Age}, \textit{Gender}.
+
+    \textbf{GPA (4.0), Age, Gender}:
+    \begin{enumerate}
+    \item 4.0, 22, M
+    \item 4.0, 22, M
+    \item 3.91, 22, M
+    \item 3.88, 22, M
+    \item 3.88, 22, F
+    \item 3.72, 22, F
+    \item 3.75, 22, F
+    \item 3.76, 22, F
+    \end{enumerate}
+
+
+Let’s say group-level fairness requires you to enforce a minimum of 50\% females in each cluster. This could give a cluster of the following individuals:
+
+\begin{enumerate}
+    \item 4.0, 22, M
+    \item 4.0, 22, M
+    \item 3.88, 22, F
+    \item 3.72, 22, F
+\end{enumerate}
+
+However, given that all data points differ only in a single attribute, i.e. GPA, what would individual-level fairness prescribe?
+
+\item Describe a real-life scenario of your choice (in at most 200-300 words), where the ground-truth definition of a fair outcome is fuzzy and needs to be dealt with on a case-by-case basis. Feel free to be creative. 
+
+\end{enumerate}
+
+\end{problem}
+
+\subsection*{Solution}
+\begin{enumerate}
+  \item 
+  \item 
+  \item 
+  \item 
+  \item 
+\end{enumerate}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Name and Calibration
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Name}
+
+\subsection*{Collaborators and Resources}
+Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?
+
+\subsection*{Calibration}
+Approximately how long did this homework take you to complete (in hours)? 
+
+\end{document}
