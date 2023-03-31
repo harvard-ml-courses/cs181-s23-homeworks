@@ -79,10 +79,10 @@ In an unsupervised setting, we are only given a set of observables as our traini
     Steps have been left out of the derivation for brevity, but feel free to walk through it as an additional challenge! Referencing the expression above, why is optimizing this likelihood directly intractable?
 
 \item \textbf{Complete Data Log Likelihood} Now, assume that we know the latents $\boldz_n$. In other words, assume that we know which class each $x$ belongs to. We can define the complete dataset
-  $\mathcal D = \{(x_n, \boldz_n)\}_{n=1}^N$ as one that includes these latents $\boldz_n$. Note that we can now write the negative complete data log likelihood as: 
+  $\mathcal D = \{(x_n, \boldz_n)\}_{n=1}^N$ as one that includes these latents $\boldz_n$. Note that we can now write the complete data log likelihood as: 
   \begin{align*}
-      \mcL(\btheta, \{\beta_k\}^K_{k=1}) &=  -\log p(\mathcal D; \btheta, \{\beta_k\}^K_{k=1}) \\
-      &= \sum_{n = 1}^N \sum_{k = 1}^K z_{nk} \log \operatorname{Gamma}(x_n \alpha, \beta_k))^{z_{nk}} - \sum_{n = 1}^N \sum_{k = 1}^K z_{nk} \log\theta_k.
+      \mcL(\btheta, \{\beta_k\}^K_{k=1}) &=  \log p(\mathcal D; \btheta, \{\beta_k\}^K_{k=1}) \\
+      &= \sum_{n = 1}^N \sum_{k = 1}^K z_{nk} \log \operatorname{Gamma}(x_n \alpha, \beta_k) + \sum_{n = 1}^N \sum_{k = 1}^K z_{nk} \log\theta_k.
   \end{align*}
 
   Again, steps have been left out of the derivation for brevity, but feel free to walk through it as an additional challenge! Why is optimizing this loss now computationally tractable if we know $\boldz_n$? Please explain how what we have seen in the first two parts motivates the EM algorithm.
@@ -152,8 +152,6 @@ Using the~$\boldq_n$ estimates from the Expectation Step, derive an update for m
   \item 
     Plot:
 
-    % \includegraphics[width=\linewidth]{p1}
-
     Code:
 
     \begin{python}
@@ -179,13 +177,6 @@ def run_em(theta, betas, iterations=1000):
 \newpage
 
 \begin{problem}[Principal Component Analysis on MNIST Data]
-
-% FDV: Here are the notes from last year.  I've already edited to make clear we want L2.  As noted below, we should also provide the baseline/reference to the pset 4 solutions in case they computed that wrong somehow.  
-% 
-% # problem 2 clarifications
-% *NB: There was a lot of confusion about this problem, and we ended up accepting any form of comparison to PCA. Next year should clarify which norm students should use more explicitly (and maybe provide a baseline for students if the computation of the reconstruction error is different from what students calculated on pset4.)*
-% 
-% For Problem 2.3 (computing PCA reconstruction error), we will accept both the L1 and L2 norm and both summing over the errors for individual images and taking the mean of the errors (as long as you compute the error for K-Means the same way as you compute it for PCA). Apologies for the ambiguity in this question! 
 
   
 For this problem you will implement PCA from scratch on the first 6000 images of the MNIST dataset. Your job is to apply PCA on MNIST and discuss what kind of structure is found. Implement your solution in \texttt{p2.ipynb} and attach the final plots below.
@@ -218,17 +209,8 @@ Recall the derivation of PCA covered in Section 6, where the principal component
 
 How can we interpret these first 10 principal component images? Do they perform well as a clustering technique? Why or why not?
 
-% removed K-Means direct comparison, instead asking about broad comparison to other clustering techniques
-
 \item Compute the reconstruction error on the data set using the mean image of the dataset.  Then compute the reconstruction error using the first 10 principal components. (For consistency in grading, define the reconstruction error as the squared L2 norm averaged over all data points.)
 
-% FDV: Added this part: Solution should be that it does not change the
-% reconstruction error (if before X approx W*U, it becomes W*R^-1*R*U)
-% and that while still orthogonal, it may no longer align with the
-% ordered directions of most variance.  Note: we can ask why or why
-% not, or say "Why doesn't this change the reconstruction error?  What
-% parts of the interpretation of the principle components change, and
-% what stays the same?"
 \item Suppose you took the original matrix of principal components
   that you found $U$ and multiplied it by some rotation matrix $R$.
   Why doesn't this change the reconstruction error?  What parts of the interpretation of the principal components change, and what stays the same?
@@ -243,11 +225,6 @@ How can we interpret these first 10 principal component images? Do they perform 
 \newpage
 \subsection*{Solution}
 Plots:
-
-% \includegraphics[width=\linewidth]{p2_cfvs}
-
-% \includegraphics[width=0.25\linewidth]{p2_mean}
-% \includegraphics[width=0.75\linewidth]{p2_pcomps}
 
 Code:
 
