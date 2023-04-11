@@ -184,7 +184,7 @@ For this problem you will implement PCA from scratch on the first 6000 images of
 Recall the derivation of PCA covered in Section 6, where the principal components are associated with the largest eigenvalues of the covariance matrix: 
 
 \begin{enumerate}[label=(\alph*)]
-    \item Derive the empirical covariance matrix, which is defined as $\Sigma_X = \frac{1}{N}X^TX$ for data matrix $X$. \textit{This is true only if $X$ is centered: i.e. its columns have mean 0.}
+    \item We want to find the eigenvectors and eigenvalues of the empirical covariance matrix, which is defined as $\Sigma_X = \frac{1}{N}X^TX$ for data matrix $X$. \textit{This is true only if $X$ is centered: i.e. its columns have mean 0.}
     \item Decompose the data matrix with Singular Value Decomposition (SVD) into $X = USV^T$. One possible way to do this is with {\normalfont \texttt{np.linalg.svd}}.
     \item In this decomposition, $S$ is a diagonal matrix with entries $s_{i}$ which are related to eigenvalues $\lambda_{i}$ of $\Sigma_X$ via the equation $\lambda_i = s_i^2/N$ (why is this true?) and $V$ is an orthonormal matrix with columns as the eigenvectors of $\Sigma_X$.
     \item For PCA, you want to compute the first $k < d$ principal components. Make sure your eigenvalues are sorted correctly before extracting the corresponding first $k$ eigenvectors!
